@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/Template.Frontend/">
+    <Project Path="Template.Frontend/Template.Web/template.web.esproj">
+      <Build />
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Template.Backend/">
+    <Project Path="Template.Backend/Template.API/Template.API.csproj" />
+    <Project Path="Template.Backend/Template.Application/Template.Application.csproj" />
+    <Project Path="Template.Backend/Template.Domain/Template.Domain.csproj" />
+    <Project Path="Template.Backend/Template.Helper/Template.Helper.csproj" />
+    <Project Path="Template.Backend/Template.Infrastructure/Template.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Template.Database/">
+    <File Path="Query.sql" />
+    <Project Path="Template.Database/Template.Database.sqlproj" Id="85045e02-ce3e-47bc-8e26-816a22faef47">
+      <Build />
+      <Deploy />
+    </Project>
+  </Folder>
+</Solution>

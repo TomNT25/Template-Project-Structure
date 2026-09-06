@@ -1,0 +1,51 @@
+import React, { useState } from 'react';
+import { useAuth } from '@application/context/AuthContext';
+
+export interface UseLoginPageProps {
+  onNavigateToRegister?: () => void;
+  onNavigateToForgotPassword?: () => void;
+  onSuccess?: () => void;
+}
+
+export function useLoginPage({
+  onNavigateToRegister,
+  onNavigateToForgotPassword,
+  onSuccess,
+}: UseLoginPageProps) {
+  const { login, isLoading } = useAuth();
+  const [email, setEmail] = useState<string>('admin@template.com');
+  const [password, setPassword] = useState<string>('password123');
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
+  const validate = () => {
+    const errs: { email?: string; password?: string } = {};
+    if (!email) errs.email = 'Email is required';
+    if (!password) errs.password = 'Password is required';
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    try {
+      await login({ email, passwordHash: password });
+      if (onSuccess) onSuccess();
+    } catch {
+      // Handled in AuthContext toast
+    }
+  };
+
+  return {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    errors,
+    isLoading,
+    handleSubmit,
+    onNavigateToRegister,
+    onNavigateToForgotPassword,
+  };
+}
