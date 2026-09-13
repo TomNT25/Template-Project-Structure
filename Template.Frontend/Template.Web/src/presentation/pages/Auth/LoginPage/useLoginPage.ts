@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@application/context/AuthContext';
 
 export interface UseLoginPageProps {
@@ -7,11 +8,9 @@ export interface UseLoginPageProps {
   onSuccess?: () => void;
 }
 
-export function useLoginPage({
-  onNavigateToRegister,
-  onNavigateToForgotPassword,
-  onSuccess,
-}: UseLoginPageProps) {
+export function useLoginPage(props: UseLoginPageProps = {}) {
+  const { onNavigateToRegister, onNavigateToForgotPassword, onSuccess } = props;
+  const navigate = useNavigate();
   const { login, isLoading } = useAuth();
   const [email, setEmail] = useState<string>('admin@example.com');
   const [password, setPassword] = useState<string>('123');
@@ -30,10 +29,30 @@ export function useLoginPage({
     if (!validate()) return;
 
     try {
-      await login({ email, password: password });
-      if (onSuccess) onSuccess();
+      await login({ email, password });
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        navigate('/dashboard');
+      }
     } catch {
       // Handled in AuthContext toast
+    }
+  };
+
+  const handleRegisterClick = () => {
+    if (onNavigateToRegister) {
+      onNavigateToRegister();
+    } else {
+      navigate('/register');
+    }
+  };
+
+  const handleForgotPasswordClick = () => {
+    if (onNavigateToForgotPassword) {
+      onNavigateToForgotPassword();
+    } else {
+      navigate('/verify-otp');
     }
   };
 
@@ -45,7 +64,7 @@ export function useLoginPage({
     errors,
     isLoading,
     handleSubmit,
-    onNavigateToRegister,
-    onNavigateToForgotPassword,
+    handleRegisterClick,
+    handleForgotPasswordClick,
   };
 }

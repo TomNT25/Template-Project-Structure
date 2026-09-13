@@ -1,11 +1,10 @@
 import React from 'react';
 import { AuthLayout } from '@presentation/layouts/AuthLayout';
-import { Input } from '@presentation/components/Input';
-import { Button } from '@presentation/components/Button';
+import { Input, Button } from '@presentation/components';
 import { useLoginPage, type UseLoginPageProps } from './useLoginPage';
 import './LoginPage.css';
 
-export interface LoginPageProps extends UseLoginPageProps { }
+export interface LoginPageProps extends UseLoginPageProps {}
 
 export const LoginPage: React.FC<LoginPageProps> = (props) => {
   const {
@@ -16,8 +15,8 @@ export const LoginPage: React.FC<LoginPageProps> = (props) => {
     errors,
     isLoading,
     handleSubmit,
-    onNavigateToRegister,
-    onNavigateToForgotPassword,
+    handleRegisterClick,
+    handleForgotPasswordClick,
   } = useLoginPage(props);
 
   return (
@@ -48,15 +47,13 @@ export const LoginPage: React.FC<LoginPageProps> = (props) => {
 
         <div className="auth-links">
           <span />
-          {onNavigateToForgotPassword && (
-            <button
-              type="button"
-              className="auth-switch-link"
-              onClick={onNavigateToForgotPassword}
-            >
-              Forgot password?
-            </button>
-          )}
+          <button
+            type="button"
+            className="auth-switch-link"
+            onClick={handleForgotPasswordClick}
+          >
+            Forgot password?
+          </button>
         </div>
 
         <Button type="submit" variant="primary" fullWidth isLoading={isLoading}>
@@ -69,14 +66,12 @@ export const LoginPage: React.FC<LoginPageProps> = (props) => {
         Email: <code>admin@example.com</code> | Password: <code>123</code>
       </div>
 
-      {onNavigateToRegister && (
-        <div className="auth-switch-prompt">
-          Don't have an account?{' '}
-          <span className="auth-switch-link" onClick={onNavigateToRegister}>
-            Register here
-          </span>
-        </div>
-      )}
+      <div className="auth-switch-prompt">
+        Don't have an account?{' '}
+        <span className="auth-switch-link" onClick={handleRegisterClick}>
+          Register here
+        </span>
+      </div>
     </AuthLayout>
   );
 };

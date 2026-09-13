@@ -1,28 +1,24 @@
+import { useLocation } from 'react-router-dom';
+
 export interface NavItem {
   id: string;
   label: string;
   icon: string;
+  path: string;
 }
 
-export interface UseSidebarProps {
-  activeTab: string;
-  onTabChange: (tabId: string) => void;
-}
+export function useSidebar() {
+  const location = useLocation();
 
-export function useSidebar({ activeTab, onTabChange }: UseSidebarProps) {
   const navItems: NavItem[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-    { id: 'students', label: 'Student Directory', icon: '🎓' },
-    { id: 'auth-demo', label: 'Auth Features', icon: '🔐' },
+    { id: 'dashboard', label: 'Dashboard', icon: '📊', path: '/dashboard' },
+    { id: 'students', label: 'Student Directory', icon: '🎓', path: '/students' },
   ];
 
-  const handleSelect = (id: string) => {
-    onTabChange(id);
-  };
+  const currentPath = location.pathname;
 
   return {
     navItems,
-    activeTab,
-    handleSelect,
+    currentPath,
   };
 }

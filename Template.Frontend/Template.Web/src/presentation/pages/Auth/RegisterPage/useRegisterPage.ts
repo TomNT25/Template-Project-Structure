@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@application/context/AuthContext';
 
 export interface UseRegisterPageProps {
@@ -6,10 +7,9 @@ export interface UseRegisterPageProps {
   onNavigateToVerifyOtp?: (email: string) => void;
 }
 
-export function useRegisterPage({
-  onNavigateToLogin,
-  onNavigateToVerifyOtp,
-}: UseRegisterPageProps) {
+export function useRegisterPage(props: UseRegisterPageProps = {}) {
+  const { onNavigateToLogin, onNavigateToVerifyOtp } = props;
+  const navigate = useNavigate();
   const { register, isLoading } = useAuth();
 
   const [username, setUsername] = useState<string>('');
@@ -42,13 +42,29 @@ export function useRegisterPage({
         password,
       });
 
-      if (isVerificationRequired && onNavigateToVerifyOtp) {
-        onNavigateToVerifyOtp(email);
-      } else if (onNavigateToLogin) {
-        onNavigateToLogin();
+      if (isVerificationRequired) {
+        if (onNavigateToVerifyOtp) {
+          onNavigateToVerifyOtp(email);
+        } else {
+          navigate(`/verify-otp?email=${encodeURIComponent(email)}`);
+        }
+      } else {
+        if (onNavigateToLogin) {
+          onNavigateToLogin();
+        } else {
+          navigate('/login');
+        }
       }
     } catch {
       // Toast handles error message
+    }
+  };
+
+  const handleLoginClick = () => {
+    if (onNavigateToLogin) {
+      onNavigateToLogin();
+    } else {
+      navigate('/login');
     }
   };
 
@@ -64,6 +80,6 @@ export function useRegisterPage({
     errors,
     isLoading,
     handleSubmit,
-    onNavigateToLogin,
+    handleLoginClick,
   };
 }

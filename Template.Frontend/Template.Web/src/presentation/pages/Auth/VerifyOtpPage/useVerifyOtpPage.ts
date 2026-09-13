@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@application/context/AuthContext';
 import { authApi } from '@infrastructure/api/authApi';
 import { useToast } from '@application/context/ToastContext';
@@ -9,14 +10,15 @@ export interface UseVerifyOtpPageProps {
   onNavigateToLogin?: () => void;
 }
 
-export function useVerifyOtpPage({
-  initialEmail = '',
-  onSuccess,
-  onNavigateToLogin,
-}: UseVerifyOtpPageProps) {
+export function useVerifyOtpPage(props: UseVerifyOtpPageProps = {}) {
+  const { initialEmail, onSuccess, onNavigateToLogin } = props;
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const emailParam = searchParams.get('email') || '';
+
   const { verifyOtp, isLoading } = useAuth();
   const { showToast } = useToast();
-  const [email, setEmail] = useState<string>(initialEmail || 'user@example.com');
+  const [email, setEmail] = useState<string>(initialEmail || emailParam || 'user@example.com');
   const [otpCode, setOtpCode] = useState<string>('123456');
   const [isResending, setIsResending] = useState<boolean>(false);
 
@@ -29,8 +31,12 @@ export function useVerifyOtpPage({
 
     try {
       const isVerified = await verifyOtp({ email, otpCode });
-      if (isVerified && onSuccess) {
-        onSuccess();
+      if (isVerified) {
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          navigate('/login');
+        }
       }
     } catch {
       // Toast handles error
@@ -49,6 +55,14 @@ export function useVerifyOtpPage({
     }
   };
 
+  const handleLoginClick = () => {
+    if (onNavigateToLogin) {
+      onNavigateToLogin();
+    } else {
+      navigate('/login');
+    }
+  };
+
   return {
     email,
     setEmail,
@@ -58,6 +72,6 @@ export function useVerifyOtpPage({
     isResending,
     handleSubmit,
     handleResendOtp,
-    onNavigateToLogin,
+    handleLoginClick,
   };
 }

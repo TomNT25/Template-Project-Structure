@@ -1,7 +1,6 @@
 import React from 'react';
 import { AuthLayout } from '@presentation/layouts/AuthLayout';
-import { Input } from '@presentation/components/Input';
-import { Button } from '@presentation/components/Button';
+import { Input, Button } from '@presentation/components';
 import { useVerifyOtpPage, type UseVerifyOtpPageProps } from './useVerifyOtpPage';
 import './VerifyOtpPage.css';
 
@@ -17,7 +16,7 @@ export const VerifyOtpPage: React.FC<VerifyOtpPageProps> = (props) => {
     isResending,
     handleSubmit,
     handleResendOtp,
-    onNavigateToLogin,
+    handleLoginClick,
   } = useVerifyOtpPage(props);
 
   return (
@@ -59,14 +58,12 @@ export const VerifyOtpPage: React.FC<VerifyOtpPageProps> = (props) => {
         </Button>
       </form>
 
-      {onNavigateToLogin && (
-        <div className="auth-switch-prompt">
-          Back to{' '}
-          <span className="auth-switch-link" onClick={onNavigateToLogin}>
-            Sign In
-          </span>
-        </div>
-      )}
+      <div className="auth-switch-prompt">
+        Back to{' '}
+        <span className="auth-switch-link" onClick={handleLoginClick}>
+          Sign In
+        </span>
+      </div>
     </AuthLayout>
   );
 };

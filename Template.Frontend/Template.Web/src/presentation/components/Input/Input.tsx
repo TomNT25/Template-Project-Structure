@@ -34,7 +34,7 @@ export const Input: React.FC<InputProps> = ({
     showPassword,
     togglePasswordVisibility,
     hasError,
-  } = useInput({ value: value as string, defaultValue: defaultValue as string, onChange, type, error });
+  } = useInput({ value, defaultValue, onChange, type, error });
 
   const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 

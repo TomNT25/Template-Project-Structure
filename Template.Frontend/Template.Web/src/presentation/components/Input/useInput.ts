@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
 export interface UseInputProps {
-  value?: string;
-  defaultValue?: string;
+  value?: string | number;
+  defaultValue?: string | number;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: string;
   error?: string;
@@ -10,7 +10,7 @@ export interface UseInputProps {
 
 export function useInput(props: UseInputProps) {
   const { value, defaultValue, onChange, type = 'text', error } = props;
-  const [internalValue, setInternalValue] = useState<string>(defaultValue || '');
+  const [internalValue, setInternalValue] = useState<string | number>(defaultValue !== undefined ? defaultValue : '');
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const isPasswordType = type === 'password';

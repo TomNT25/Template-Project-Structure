@@ -1,7 +1,6 @@
 import React from 'react';
 import { AuthLayout } from '@presentation/layouts/AuthLayout';
-import { Input } from '@presentation/components/Input';
-import { Button } from '@presentation/components/Button';
+import { Input, Button } from '@presentation/components';
 import { useRegisterPage, type UseRegisterPageProps } from './useRegisterPage';
 import './RegisterPage.css';
 
@@ -20,7 +19,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = (props) => {
     errors,
     isLoading,
     handleSubmit,
-    onNavigateToLogin,
+    handleLoginClick,
   } = useRegisterPage(props);
 
   return (
@@ -72,14 +71,12 @@ export const RegisterPage: React.FC<RegisterPageProps> = (props) => {
         </Button>
       </form>
 
-      {onNavigateToLogin && (
-        <div className="auth-switch-prompt">
-          Already have an account?{' '}
-          <span className="auth-switch-link" onClick={onNavigateToLogin}>
-            Sign in here
-          </span>
-        </div>
-      )}
+      <div className="auth-switch-prompt">
+        Already have an account?{' '}
+        <span className="auth-switch-link" onClick={handleLoginClick}>
+          Sign in here
+        </span>
+      </div>
     </AuthLayout>
   );
 };

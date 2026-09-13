@@ -1,7 +1,12 @@
 import React from 'react';
-import { Button } from '@presentation/components/Button';
-import { Input } from '@presentation/components/Input';
-import { Modal } from '@presentation/components/Modal';
+import {
+  Button,
+  Input,
+  Select,
+  Modal,
+  Badge,
+  Spinner,
+} from '@presentation/components';
 import {
   TableHeader,
   TableBody,
@@ -20,7 +25,7 @@ const studentColumns: ColumnDef<any>[] = [
   },
   {
     header: 'Full Name',
-    accessorKey: 'name', // Note: Updated to match your API response "name" field
+    accessorKey: 'name',
   },
   {
     header: 'Email',
@@ -33,17 +38,24 @@ const studentColumns: ColumnDef<any>[] = [
   {
     header: 'GPA',
     accessorKey: 'gpa',
-    cell: (row) => <strong>{row.gpa?.toFixed(2)}</strong>,
+    cell: (row) => <strong>{typeof row.gpa === 'number' ? row.gpa.toFixed(2) : row.gpa || '0.00'}</strong>,
   },
   {
     header: 'Status',
     accessorKey: 'status',
-    cell: (row) => (
-      <span className={`badge badge-${row.status?.toLowerCase() || 'default'}`}>
-        ● {row.status || 'Active'}
-      </span>
-    ),
+    cell: (row) => {
+      const statusStr = row.status || 'Active';
+      const variant = statusStr.toLowerCase() === 'active' ? 'success' : 'default';
+      return <Badge variant={variant}>{statusStr}</Badge>;
+    },
   },
+];
+
+const departmentOptions = [
+  { label: 'Computer Science', value: 'Computer Science' },
+  { label: 'Information Technology', value: 'Information Technology' },
+  { label: 'Software Engineering', value: 'Software Engineering' },
+  { label: 'Data Science', value: 'Data Science' },
 ];
 
 export const StudentsPage: React.FC = () => {
@@ -98,7 +110,9 @@ export const StudentsPage: React.FC = () => {
         </TableToolbar>
 
         {isLoading ? (
-          <div style={{ padding: '40px', textAlign: 'center' }}>Loading students list...</div>
+          <div style={{ padding: '40px', textAlign: 'center' }}>
+            <Spinner label="Loading students list..." size="md" />
+          </div>
         ) : students.length === 0 ? (
           <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
             No student records found matching search.
@@ -114,7 +128,7 @@ export const StudentsPage: React.FC = () => {
 
         <div className="pagination-footer flex justify-between items-center p-4 border-t">
           <span className="text-sm text-gray-500">
-            Showing Page {pageNumber} of {totalPages} (Total: {totalRecords} records)
+            Showing Page {pageNumber} of {totalPages || 1} (Total: {totalRecords} records)
           </span>
 
           <div className="pagination-controls flex gap-2">
@@ -149,10 +163,42 @@ export const StudentsPage: React.FC = () => {
             placeholder="STD-2026-099"
             value={newStudent.studentCode}
             onChange={(e) => setNewStudent({ ...newStudent, studentCode: e.target.value })}
+            required
           />
-          {/* Form remains the same */}
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '16px' }}>
-            <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
+          <Input
+            label="Full Name"
+            placeholder="John Doe"
+            value={newStudent.fullName}
+            onChange={(e) => setNewStudent({ ...newStudent, fullName: e.target.value })}
+            required
+          />
+          <Input
+            label="Email Address"
+            type="email"
+            placeholder="student@university.edu"
+            value={newStudent.email}
+            onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })}
+            required
+          />
+          <Select
+            label="Department"
+            placeholder="Select Department"
+            options={departmentOptions}
+            value={newStudent.department}
+            onChange={(e) => setNewStudent({ ...newStudent, department: e.target.value })}
+            required
+          />
+          <Input
+            label="GPA"
+            type="number"
+            step="0.01"
+            placeholder="3.80"
+            value={newStudent.gpa || ''}
+            onChange={(e) => setNewStudent({ ...newStudent, gpa: parseFloat(e.target.value) || 0 })}
+          />
+
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '20px' }}>
+            <Button type="button" variant="secondary" onClick={() => setIsModalOpen(false)}>
               Cancel
             </Button>
             <Button type="submit" variant="primary" isLoading={isSubmitting}>

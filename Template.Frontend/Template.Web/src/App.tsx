@@ -1,87 +1,65 @@
 import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@application/context/ThemeContext';
 import { ToastProvider } from '@application/context/ToastContext';
-import { AuthProvider, useAuth } from '@application/context/AuthContext';
-import { Toast } from '@presentation/components/Toast';
+import { AuthProvider } from '@application/context/AuthContext';
+import { Toast, ProtectedRoute, GuestRoute } from '@presentation/components';
 import { MainLayout } from '@presentation/layouts/MainLayout';
 import { DashboardPage } from '@presentation/pages/Dashboard';
 import { StudentsPage } from '@presentation/pages/Students';
 import { LoginPage } from '@presentation/pages/Auth/LoginPage';
 import { RegisterPage } from '@presentation/pages/Auth/RegisterPage';
 import { VerifyOtpPage } from '@presentation/pages/Auth/VerifyOtpPage';
-import { useApp } from './useApp';
+import { NotFoundPage } from '@presentation/pages/NotFound';
 import './App.css';
 
-const AppContent: React.FC = () => {
-  const { isAuthenticated, isLoading } = useAuth();
-  const {
-    activeTab,
-    setActiveTab,
-    authScreen,
-    unverifiedEmail,
-    handleNavigateToRegister,
-    handleNavigateToLogin,
-    handleNavigateToVerifyOtp,
-  } = useApp();
-
-  if (isLoading) {
-    return (
-      <div className="app-loading-screen">
-        <div className="app-loading-spinner" />
-        <p>Loading Template...</p>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    if (authScreen === 'register') {
-      return (
-        <RegisterPage
-          onNavigateToLogin={handleNavigateToLogin}
-          onNavigateToVerifyOtp={handleNavigateToVerifyOtp}
-        />
-      );
-    }
-
-    if (authScreen === 'verify-otp') {
-      return (
-        <VerifyOtpPage
-          initialEmail={unverifiedEmail}
-          onSuccess={handleNavigateToLogin}
-          onNavigateToLogin={handleNavigateToLogin}
-        />
-      );
-    }
-
-    return (
-      <LoginPage
-        onNavigateToRegister={handleNavigateToRegister}
-        onNavigateToForgotPassword={() => handleNavigateToVerifyOtp('')}
-      />
-    );
-  }
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'dashboard':
-        return <DashboardPage />;
-      case 'students':
-        return <StudentsPage />;
-      case 'auth-demo':
-        return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <VerifyOtpPage onNavigateToLogin={() => setActiveTab('dashboard')} />
-          </div>
-        );
-      default:
-        return <DashboardPage />;
-    }
-  };
-
+export const AppContent: React.FC = () => {
   return (
-    <MainLayout activeTab={activeTab} onTabChange={setActiveTab}>
-      {renderTabContent()}
-    </MainLayout>
+    <Routes>
+      {/* Root redirect */}
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+      {/* Guest Public Routes */}
+      <Route
+        path="/login"
+        element={
+          <GuestRoute>
+            <LoginPage />
+          </GuestRoute>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <GuestRoute>
+            <RegisterPage />
+          </GuestRoute>
+        }
+      />
+      <Route
+        path="/verify-otp"
+        element={
+          <GuestRoute>
+            <VerifyOtpPage />
+          </GuestRoute>
+        }
+      />
+
+      {/* Authenticated Protected Routes with MainLayout */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/students" element={<StudentsPage />} />
+      </Route>
+
+      {/* Catch-all 404 Route */}
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 };
 

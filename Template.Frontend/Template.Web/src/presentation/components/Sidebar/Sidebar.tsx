@@ -1,25 +1,30 @@
 import React from 'react';
-import { useSidebar, type UseSidebarProps } from './useSidebar';
+import { NavLink } from 'react-router-dom';
+import { useSidebar } from './useSidebar';
 import './Sidebar.css';
 
-export interface SidebarProps extends UseSidebarProps {}
+export interface SidebarProps {
+  className?: string;
+}
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
-  const { navItems, handleSelect } = useSidebar({ activeTab, onTabChange });
+export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
+  const { navItems } = useSidebar();
   const isMock = import.meta.env.VITE_USE_MOCK_DATA === 'true';
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${className}`.trim()}>
       <nav className="sidebar-nav">
         {navItems.map((item) => (
-          <button
+          <NavLink
             key={item.id}
-            className={`sidebar-item ${activeTab === item.id ? 'sidebar-item-active' : ''}`}
-            onClick={() => handleSelect(item.id)}
+            to={item.path}
+            className={({ isActive }) =>
+              `sidebar-item ${isActive ? 'sidebar-item-active' : ''}`
+            }
           >
             <span className="sidebar-icon">{item.icon}</span>
             <span>{item.label}</span>
-          </button>
+          </NavLink>
         ))}
       </nav>
 
