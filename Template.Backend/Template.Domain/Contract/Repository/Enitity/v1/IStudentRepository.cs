@@ -7,5 +7,6 @@ namespace Template.Domain.Contract.Repository.Enitity.v1
 {
     public interface IStudentRepository : IRepository<Student>
     {
+        Task<Student?> GetByIdAsync(string id, CancellationToken cancellationToken = default);
     }
 }                                                                        

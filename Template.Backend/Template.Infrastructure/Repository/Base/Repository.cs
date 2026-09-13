@@ -1,7 +1,4 @@
 using Template.Domain.Contract.Repository;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Template.Domain.DTO;
 using System.Linq.Expressions;
 
@@ -14,7 +11,7 @@ namespace Template.Infrastructure.Repository.Base
         public abstract Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
         public abstract Task<T?> GetByIDAsync(int id, CancellationToken cancellationToken = default);
 
-        public Task<CursorPaginationResponse<TDto>> GetPagedAsync<TDto>(CursorPaginationRequest request, Expression<Func<T, bool>>? filter, CancellationToken cancellationToken = default)
+        public Task<PageNumberPaginationResponse<TDto>> GetPageNumberPaginationAsync<TDto>(PageNumberPaginationRequest request, Expression<Func<T, bool>>? filter, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

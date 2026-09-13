@@ -2,17 +2,9 @@ using System.Collections.Generic;
 
 namespace Template.Domain.DTO
 {
-    public class PaginationResponse<T> : CursorPaginationResponse<T>
+    public abstract class PaginationResponse<T>
     {
-        public int TotalRecords { get; set; }
-
-        public PaginationResponse()
-        {
-        }
-
-        public PaginationResponse(IEnumerable<T> items, string? nextCursor, bool hasNextPage, int pageSize)
-            : base(items, nextCursor, hasNextPage, pageSize)
-        {
-        }
+        public IEnumerable<T> Items { get; init; } = [];
+        public int PageSize { get; init; }
     }
 }

@@ -43,6 +43,7 @@ namespace Template.Application.Feature.v1.Auth.Login
 
             return new LoginResponseDTO
             {
+                User = getUserByEmailResult,
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
                 ExpiresIn = tokenExpireMinutes

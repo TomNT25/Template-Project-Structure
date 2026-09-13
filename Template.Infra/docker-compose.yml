@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # template-authentication-redis:
+  #   image: redis:7-alpine
+  #   container_name: template-authentication-redis
+  #   environment:
+  #     - REDIS_PASSWORD=${REDIS_PASSWORD}
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - template-network
+
+  template-database:
+    image: postgres:15-alpine
+    container_name: template-database
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5433:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - template-network
+  # template-authentication-service:
+  #   image: template-authentication-service
+  #   container_name: template-authentication-service
+  #   build:
+  #     context: ..
+  #     dockerfile: Authentication-Service/Dockerfile
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+  #     - ASPNETCORE_HTTP_PORTS=${ASPNETCORE_HTTP_PORTS}
+  #     - Database__ConnectionString=${Database__ConnectionString}
+  #     - Redis__ConnectionString=${Redis__ConnectionString}
+  #   ports:
+  #     - "5142:5142"
+  #   depends_on:
+  #     - template-authentication-database
+  #   networks:
+  #     - template-network
+
+volumes:
+  db-data:
+
+networks:
+  template-network:
+    driver: bridge

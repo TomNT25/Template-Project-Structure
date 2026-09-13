@@ -59,8 +59,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await authApi.login(request);
       tokenStorage.setToken(response.token);
       tokenStorage.setUser(response.user);
+      response.user.fullName = response.user.firstName?.concat(" " + response.user.lastName);
       setUser(response.user);
-      showToast('success', 'Welcome back!', `Logged in as ${response.user.fullName}`);
+      showToast('success', 'Welcome back!', `Logged in as ${response.user.fullName})
+    }`);
     } catch (err: unknown) {
       const message = (err as Error).message || 'Login failed';
       showToast('error', 'Login Failed', message);

@@ -33,7 +33,7 @@ namespace Template.Application.Feature.v1.Student.GetAllStudent
                 ? null
                 : s => s.Name.Contains(request.SearchTerm);
 
-            var pagedResult = await _StudentRepository.GetPagedAsync<StudentDTO>(
+            var pagedResult = await _StudentRepository.GetPageNumberPaginationAsync<StudentDTO>(
                 request,
                 filter,
                 cancellationToken);
@@ -41,9 +41,12 @@ namespace Template.Application.Feature.v1.Student.GetAllStudent
             return new GetAllStudentResponseDTO
             {
                 Items = pagedResult.Items,
-                NextCursor = pagedResult.NextCursor,
+                PageNumber = pagedResult.PageNumber,
+                PageSize = pagedResult.PageSize,
+                TotalRecords = pagedResult.TotalRecords,
+                TotalPages = pagedResult.TotalPages,
                 HasNextPage = pagedResult.HasNextPage,
-                PageSize = pagedResult.PageSize
+                HasPreviousPage = pagedResult.HasPreviousPage
             };
         }
     }

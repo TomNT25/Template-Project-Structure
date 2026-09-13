@@ -5,7 +5,7 @@ import { Button } from '@presentation/components/Button';
 import { useLoginPage, type UseLoginPageProps } from './useLoginPage';
 import './LoginPage.css';
 
-export interface LoginPageProps extends UseLoginPageProps {}
+export interface LoginPageProps extends UseLoginPageProps { }
 
 export const LoginPage: React.FC<LoginPageProps> = (props) => {
   const {
@@ -29,7 +29,7 @@ export const LoginPage: React.FC<LoginPageProps> = (props) => {
         <Input
           label="Email Address"
           type="email"
-          placeholder="admin@template.com"
+          placeholder="admin@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           error={errors.email}
@@ -66,7 +66,7 @@ export const LoginPage: React.FC<LoginPageProps> = (props) => {
 
       <div className="demo-credentials-box">
         💡 <strong>Demo Credentials:</strong><br />
-        Email: <code>admin@template.com</code> | Password: <code>password123</code>
+        Email: <code>admin@example.com</code> | Password: <code>123</code>
       </div>
 
       {onNavigateToRegister && (

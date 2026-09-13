@@ -77,15 +77,31 @@ const initialStudents: Student[] = [
 
 let studentList: Student[] = [...initialStudents];
 
-const mockUser: User = {
-  id: 'usr-9901',
-  username: 'admin_user',
-  email: 'admin@template.com',
-  fullName: 'Administrator',
-  role: 'Admin',
-  emailVerified: true,
-  avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80',
-  createdAt: new Date().toISOString(),
+export const mockUser: User = {
+  id: "01A06B3F-EDF5-7201-82A2-5258B44F0EA8",
+  code: "STD-2026-001",
+  username: "danle",
+  email: "dan.le@university.edu",
+  passwordHash: "AQAAAAEAACcQAAAAEJ...", // Simulated hashed password string
+  firstName: "Dan",
+  lastName: "Le",
+  phoneNumber: "+84901234567",
+  avatarUrl: "https://ui-avatars.com/api/?name=Dan+Le",
+  avatarMediaFileId: 1042,
+  gender: "Male",
+  birthDate: "2004-05-15T00:00:00.000Z",
+  address: "Ho Chi Minh City, Vietnam",
+  provider: "system",
+  isActive: true,
+  isEmailVerified: true,
+  emailVerifiedAt: "2026-09-01T10:15:30.000Z",
+  lastLoginAt: "2026-09-09T08:22:10.000Z",
+  createdAt: "2026-08-20T09:00:00.000Z",
+  updatedAt: "2026-09-05T14:45:00.000Z",
+  createdBy: 1, // Example Admin ID who created this record
+  updatedBy: 1,
+  roleId: "ROLE-STUDENT-999",
+  roleName: "Student"
 };
 
 function delay(ms: number) {
@@ -95,7 +111,7 @@ function delay(ms: number) {
 export const mockAuthService = {
   async login(request: LoginRequestDTO): Promise<LoginResponseDTO> {
     await delay(MOCK_DELAY);
-    if (!request.email || !request.passwordHash) {
+    if (!request.email || !request.password) {
       throw new Error('Email and password are required');
     }
 

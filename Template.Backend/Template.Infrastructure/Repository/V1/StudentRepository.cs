@@ -16,4 +16,9 @@ public class StudentRepository : RepositoryEFCoreBase<Student>, IStudentReposito
         IMapper mapper) : base(templateDbContext, mapper)
     {
     }
+
+    public async Task<Student?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.FindAsync(new object[] { id }, cancellationToken);
+    }
 }

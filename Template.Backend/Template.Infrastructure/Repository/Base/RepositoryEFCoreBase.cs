@@ -48,52 +48,48 @@ namespace Template.Infrastructure.Repository.Base
             return await _dbSet.FindAsync(new object[] { id }, cancellationToken);
         }
 
-        public async Task<CursorPaginationResponse<TDto>> GetPagedAsync<TDto>(
-            CursorPaginationRequest request, 
-            Expression<Func<T, bool>>? filter, 
-            CancellationToken cancellationToken = default)
+        public async Task<PageNumberPaginationResponse<TDto>> GetPageNumberPaginationAsync<TDto>(
+            PageNumberPaginationRequest request,
+            Expression<Func<T, bool>>? filter,
+            CancellationToken cancellationToken = default
+        )
         {
             var query = _dbSet.AsNoTracking();
 
-            // 1. Apply Filtering (e.g., SearchTerm)
             if (filter != null)
             {
                 query = query.Where(filter);
             }
 
-            // 2. Apply Cursor Filter
-            query = query.ApplyCursorFilter(request.Cursor, request.SortColumn, request.SortDescending);
+            var totalRecords = await query.CountAsync(cancellationToken);
 
-            // 3. Apply Dynamic Sorting (defaulting to Id)
             var sortCol = string.IsNullOrWhiteSpace(request.SortColumn) ? "Id" : request.SortColumn;
+
             query = query.OrderByDynamic(sortCol, request.SortDescending);
 
-            // 4. Fetch (PageSize + 1) items to check for Next Page without CountAsync()
-            var rawItems = await query
-                .Take(request.PageSize + 1)
+            var pageNumber = request.PageNumber < 1 ? 1 : request.PageNumber;
+            var pageSize = request.PageSize < 1 ? 10 : request.PageSize;
+            var skip = (pageNumber - 1) * pageSize;
+
+            var items = await query
+                .Skip(skip)
+                .Take(pageSize)
                 .ProjectToType<TDto>()
                 .ToListAsync(cancellationToken);
 
-            bool hasNextPage = rawItems.Count > request.PageSize;
-            var items = hasNextPage ? rawItems.Take(request.PageSize).ToList() : rawItems;
-
-            // 5. Generate opaque NextCursor token from last item if next page exists
-            string? nextCursor = null;
-            if (hasNextPage && items.Count > 0)
+            var totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            var result = new PageNumberPaginationResponse<TDto>()
             {
-                var lastItem = items[items.Count - 1];
-                var propInfo = typeof(TDto).GetProperty(sortCol) ?? typeof(TDto).GetProperty("Id");
-                if (propInfo != null)
-                {
-                    var val = propInfo.GetValue(lastItem)?.ToString();
-                    if (!string.IsNullOrEmpty(val))
-                    {
-                        nextCursor = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(val));
-                    }
-                }
-            }
+                Items = items,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalRecords = totalRecords,
+                TotalPages = totalPages,
+                HasNextPage = pageNumber < totalPages,
+                HasPreviousPage = pageNumber > 1
+            };
 
-            return new CursorPaginationResponse<TDto>(items, nextCursor, hasNextPage, request.PageSize);
+            return result;
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

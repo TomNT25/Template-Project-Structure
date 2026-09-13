@@ -53,33 +53,65 @@ public class StudentRepositoryV2 : Repository<Student>, IStudentRepository
         }
     }
 
+    public async Task<Student?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+    {
+        string query = "SELECT ID, Name FROM Students WHERE ID = @Id;";
+
+        try
+        {
+            using (SqlConnection conn = _databaseConfiguration.CreateSqlConnection())
+            using (SqlCommand cmd = _databaseConfiguration.CreateSqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@Id", id);
+
+                await conn.OpenAsync(cancellationToken);
+
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync(cancellationToken))
+                {
+                    if (await reader.ReadAsync(cancellationToken))
+                    {
+                        return new Student
+                        {
+                            Id = reader["ID"].ToString() ?? string.Empty,
+                            Name = reader["Name"].ToString() ?? string.Empty
+                        };
+                    }
+                }
+            }
+
+            return null;
+        }
+        catch (SqlException ex)
+        {
+            throw new DatabaseOperationException($"An error occurred while retrieving the Student with ID {id}.", ex);
+        }
+    }
+
     public override async Task<bool> DeleteAsync(Student entity, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        string query = "DELETE FROM Students WHERE ID = @Id;";
 
-        //string query = "DELETE FROM Students WHERE StudentID = @StudentID;";
+        try
+        {
+            using (SqlConnection conn = _databaseConfiguration.CreateSqlConnection())
+            using (SqlCommand cmd = _databaseConfiguration.CreateSqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@Id", entity.Id);
 
-        //try
-        //{
-        //    using (SqlConnection conn = _databaseConfiguration.CreateSqlConnection())
-        //    using (SqlCommand cmd = _databaseConfiguration.CreateSqlCommand(query, conn))
-        //    {
-        //        cmd.Parameters.AddWithValue("@StudentID", entity.StudentID);
+                await conn.OpenAsync(cancellationToken);
+                int rowsAffected = await cmd.ExecuteNonQueryAsync(cancellationToken);
+                return rowsAffected > 0;
+            }
+        }
+        catch (SqlException ex)
+        {
+            if (ex.Number == 547)
+            {
+                throw new DatabaseOperationException("Cannot delete Student because they are referenced by existing records.", ex);
+            }
 
-        //        conn.Open();
-        //        int rowsAffected = cmd.ExecuteNonQuery();
-        //        return rowsAffected > 0;
-        //    }
-        //}
-        //catch (SqlException ex)
-        //{
-        //    // SQL Error 547 is a Foreign Key constraint violation
-        //    if (ex.Number == 547)
-        //    {
-        //        throw new DatabaseOperationException("Cannot delete Student because they are referenced by existing Subjects.", ex);
-        //    }
-        //    throw new DatabaseOperationException("An error occurred while deleting the Student.", ex);
-        //}
+            throw new DatabaseOperationException("An error occurred while deleting the Student.", ex);
+        }
     }
 
     public override async Task<IEnumerable<Student>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -150,26 +182,24 @@ public class StudentRepositoryV2 : Repository<Student>, IStudentRepository
 
     public override async Task<bool> UpdateAsync(Student entity, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        string query = "UPDATE Students SET Name = @Name WHERE ID = @Id;";
 
-        //string query = "UPDATE Students SET StudentName = @StudentName WHERE StudentID = @StudentID;";
+        try
+        {
+            using (SqlConnection conn = _databaseConfiguration.CreateSqlConnection())
+            using (SqlCommand cmd = _databaseConfiguration.CreateSqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@Name", entity.Name);
+                cmd.Parameters.AddWithValue("@Id", entity.Id);
 
-        //try
-        //{
-        //    using (SqlConnection conn = _databaseConfiguration.CreateSqlConnection())
-        //    using (SqlCommand cmd = _databaseConfiguration.CreateSqlCommand(query, conn))
-        //    {
-        //        cmd.Parameters.AddWithValue("@StudentName", entity.StudentName);
-        //        cmd.Parameters.AddWithValue("@StudentID", entity.StudentID);
-
-        //        conn.Open();
-        //        int rowsAffected = cmd.ExecuteNonQuery();
-        //        return rowsAffected > 0;
-        //    }
-        //}
-        //catch (SqlException ex)
-        //{
-        //    throw new DatabaseOperationException("An error occurred while updating the Student.", ex);
-        //}
+                await conn.OpenAsync(cancellationToken);
+                int rowsAffected = await cmd.ExecuteNonQueryAsync(cancellationToken);
+                return rowsAffected > 0;
+            }
+        }
+        catch (SqlException ex)
+        {
+            throw new DatabaseOperationException("An error occurred while updating the Student.", ex);
+        }
     }
 }

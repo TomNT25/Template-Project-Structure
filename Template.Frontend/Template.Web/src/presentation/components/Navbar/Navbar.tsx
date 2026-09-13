@@ -7,7 +7,7 @@ export interface NavbarProps {
   title?: string;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ title = 'Clean Architecture Template' }) => {
+export const Navbar: React.FC<NavbarProps> = ({ title = 'Template' }) => {
   const { theme, toggleTheme, user, userInitial, logout } = useNavbar();
 
   return (

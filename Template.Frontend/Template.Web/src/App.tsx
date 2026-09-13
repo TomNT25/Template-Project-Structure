@@ -28,7 +28,7 @@ const AppContent: React.FC = () => {
     return (
       <div className="app-loading-screen">
         <div className="app-loading-spinner" />
-        <p>Loading Clean Architecture Template...</p>
+        <p>Loading Template...</p>
       </div>
     );
   }

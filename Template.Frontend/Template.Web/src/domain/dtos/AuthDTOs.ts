@@ -2,7 +2,7 @@ import type { User } from '../entities/User';
 
 export interface LoginRequestDTO {
   email: string;
-  passwordHash: string;
+  password: string;
 }
 
 export interface LoginResponseDTO {

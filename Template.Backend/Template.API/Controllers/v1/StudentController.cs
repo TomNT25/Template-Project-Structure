@@ -2,9 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Asp.Versioning;
 using Template.Domain.Contract.RequestHandlerHub;
 using Template.Domain.DTO;
-using Template.Application.Feature.v1.Auth.Login;
 using Template.Application.Feature.v1.Student.AddStudent;
+using Template.Application.Feature.v1.Student.DeleteStudent;
 using Template.Application.Feature.v1.Student.GetAllStudent;
+using Template.Application.Feature.v1.Student.UpdateStudent;
 
 namespace Project_Structure_Template.Controllers.v1
 {
@@ -66,6 +67,40 @@ namespace Project_Structure_Template.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<AddStudentResponseDTO>(request);
             return Ok(BaseAPIResponse<AddStudentResponseDTO>.Success(result, "Add Student successful"));
+        }
+
+        /// <summary>
+        /// Update Student
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="200">Update Student success</response>
+        /// <response code="400">Update Student fail</response>
+        [HttpPost("update")]
+        [ProducesResponseType(typeof(BaseAPIResponse<UpdateStudentResponseDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        //[Policy]
+        public async Task<ActionResult<BaseAPIResponse<UpdateStudentResponseDTO>>> UpdateStudent([FromBody] UpdateStudentRequestDTO request)
+        {
+            var result = await _dispatcher.DispatchAsync<UpdateStudentResponseDTO>(request);
+            return Ok(BaseAPIResponse<UpdateStudentResponseDTO>.Success(result, "Update Student successful"));
+        }
+
+        /// <summary>
+        /// Delete Student
+        /// </summary>
+        /// <param name="request"></param>
+        /// <response code="200">Delete Student success</response>
+        /// <response code="400">Delete Student fail</response>
+        [HttpPost("delete")]
+        [ProducesResponseType(typeof(BaseAPIResponse<DeleteStudentResponseDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        //[Policy]
+        public async Task<ActionResult<BaseAPIResponse<DeleteStudentResponseDTO>>> DeleteStudent([FromBody] DeleteStudentRequestDTO request)
+        {
+            var result = await _dispatcher.DispatchAsync<DeleteStudentResponseDTO>(request);
+            return Ok(BaseAPIResponse<DeleteStudentResponseDTO>.Success(result, "Delete Student successful"));
         }
     }
 }

@@ -3,7 +3,7 @@ import { useState } from 'react';
 export type AuthScreen = 'login' | 'register' | 'verify-otp';
 
 export function useApp() {
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [activeTab, setActiveTab] = useState<string>('students');
   const [authScreen, setAuthScreen] = useState<AuthScreen>('login');
   const [unverifiedEmail, setUnverifiedEmail] = useState<string>('');
 

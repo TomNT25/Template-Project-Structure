@@ -1,0 +1,131 @@
+/* Container */
+.table-container {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    /* Keeps child elements inside the rounded corners */
+}
+
+/* Wrapper for horizontal scrolling on small screens */
+.table-scroll-wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
+
+/* Base Table */
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.875rem;
+}
+
+/* Header */
+.table-thead {
+    background-color: #f9fafb;
+    color: #374151;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.table-th {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Body */
+.table-tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.table-tr:last-child {
+    border-bottom: none;
+}
+
+.table-tr:hover {
+    background-color: #f3f4f6;
+}
+
+.table-td {
+    padding: 0.75rem 1rem;
+    color: #4b5563;
+}
+
+.table-td-empty {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+}
+
+/* Toolbar */
+.table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.table-search-input {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.table-search-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 1px #3b82f6;
+}
+
+/* Pagination */
+.table-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    font-size: 0.875rem;
+    color: #4b5563;
+    border-top: 1px solid #e5e7eb;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.table-page-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.table-btn {
+    padding: 0.25rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    background-color: #ffffff;
+    color: #374151;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.table-btn:hover:not(:disabled) {
+    background-color: #f3f4f6;
+}
+
+.table-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.table-select {
+    padding: 0.25rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    margin-left: 0.5rem;
+    outline: none;
+}

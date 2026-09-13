@@ -1,113 +1,108 @@
-import { useState, useEffect, useCallback } from 'react';
-import type { Student, AddStudentRequestDTO } from '@domain/index';
-import { studentApi } from '@infrastructure/api/studentApi';
-import { useToast } from '@application/context/ToastContext';
+import { useState, useEffect } from 'react';
 
-export function useStudentsPage() {
-  const { showToast } = useToast();
-  const [students, setStudents] = useState<Student[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [searchTerm, setSearchTerm] = useState<string>('');
+export const useStudentsPage = () => {
+  const [students, setStudents] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Cursor pagination state
-  const [currentCursor, setCurrentCursor] = useState<string | undefined>(undefined);
-  const [nextCursor, setNextCursor] = useState<string | null | undefined>(undefined);
-  const [hasNextPage, setHasNextPage] = useState<boolean>(false);
-  const [cursorHistory, setCursorHistory] = useState<(string | undefined)[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize] = useState(10);
 
-  // Add modal state
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [newStudent, setNewStudent] = useState<AddStudentRequestDTO>({
-    studentCode: '',
-    fullName: '',
-    email: '',
-    department: 'Computer Science',
-    gpa: 3.5,
-    status: 'Active',
+  // Response Metadata States
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [hasPrevPage, setHasPrevPage] = useState(false);
+
+  // Modal & Form States
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newStudent, setNewStudent] = useState({
+    studentCode: '', fullName: '', email: '', department: '', gpa: 0
   });
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const fetchStudents = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const res = await studentApi.getAllStudents({
-        cursor: currentCursor,
-        pageSize: 5,
-        searchTerm,
-      });
-      setStudents(res.items);
-      setNextCursor(res.nextCursor);
-      setHasNextPage(res.hasNextPage);
-    } catch (err: unknown) {
-      showToast('error', 'Error Loading Students', (err as Error).message || 'Failed to load list');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentCursor, searchTerm, showToast]);
-
+  // Fetch data whenever page, size, or search term changes
   useEffect(() => {
-    fetchStudents();
-  }, [fetchStudents]);
+    const fetchStudents = async () => {
+      setIsLoading(true);
+      try {
+        const queryParams = new URLSearchParams({
+          PageNumber: pageNumber.toString(),
+          PageSize: pageSize.toString(),
+        });
 
+        if (searchTerm) {
+          queryParams.append('SearchTerm', searchTerm);
+        }
+
+        const response = await fetch(`http://localhost:5290/api/v1/students?${queryParams.toString()}`, {
+          method: 'GET',
+          headers: {
+            'accept': 'application/json' // updated to json
+          }
+        });
+
+        const result = await response.json();
+
+        if (result.isSuccess) {
+          setStudents(result.data.items);
+          setTotalPages(result.data.totalPages);
+          setTotalRecords(result.data.totalRecords);
+          setHasNextPage(result.data.hasNextPage);
+          setHasPrevPage(result.data.hasPreviousPage);
+        }
+      } catch (error) {
+        console.error("Failed to fetch students:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Optional: Add a debounce here if you don't want to spam the API on every keystroke
+    const delayDebounceFn = setTimeout(() => {
+      fetchStudents();
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [pageNumber, pageSize, searchTerm]);
+
+  // Handlers
   const handleNextPage = () => {
-    if (hasNextPage && nextCursor) {
-      setCursorHistory((prev) => [...prev, currentCursor]);
-      setCurrentCursor(nextCursor);
-    }
+    if (hasNextPage) setPageNumber((prev) => prev + 1);
   };
 
   const handlePrevPage = () => {
-    if (cursorHistory.length > 0) {
-      const prevCursor = cursorHistory[cursorHistory.length - 1];
-      setCursorHistory((prev) => prev.slice(0, prev.length - 1));
-      setCurrentCursor(prevCursor);
-    }
-  };
-
-  const handleSearchChange = (term: string) => {
-    setSearchTerm(term);
-    setCurrentCursor(undefined);
-    setCursorHistory([]);
+    if (hasPrevPage) setPageNumber((prev) => prev - 1);
   };
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newStudent.fullName || !newStudent.email) {
-      showToast('error', 'Validation Error', 'Full Name and Email are required');
-      return;
-    }
-
     setIsSubmitting(true);
-    try {
-      await studentApi.addStudent(newStudent);
-      showToast('success', 'Student Added', `Student ${newStudent.fullName} registered successfully.`);
-      setIsModalOpen(false);
-      setNewStudent({
-        studentCode: '',
-        fullName: '',
-        email: '',
-        department: 'Computer Science',
-        gpa: 3.5,
-        status: 'Active',
-      });
-      fetchStudents();
-    } catch (err: unknown) {
-      showToast('error', 'Add Student Failed', (err as Error).message || 'Could not add student');
-    } finally {
+    // Add your POST request logic here
+    setTimeout(() => {
       setIsSubmitting(false);
-    }
+      setIsModalOpen(false);
+    }, 1000);
+  };
+
+  // Reset to page 1 when searching
+  const handleSearchChange = (val: string) => {
+    setSearchTerm(val);
+    setPageNumber(1);
   };
 
   return {
     students,
     isLoading,
     searchTerm,
-    setSearchTerm: handleSearchChange,
+    setSearchTerm: handleSearchChange, // Use the wrapper handler
+    pageNumber,
+    totalPages,
+    totalRecords,
     hasNextPage,
-    hasPrevPage: cursorHistory.length > 0,
+    hasPrevPage,
     handleNextPage,
     handlePrevPage,
-    currentCursor,
     isModalOpen,
     setIsModalOpen,
     newStudent,
@@ -115,4 +110,4 @@ export function useStudentsPage() {
     isSubmitting,
     handleAddSubmit,
   };
-}
+};

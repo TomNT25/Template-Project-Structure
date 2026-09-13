@@ -13,8 +13,8 @@ export function useLoginPage({
   onSuccess,
 }: UseLoginPageProps) {
   const { login, isLoading } = useAuth();
-  const [email, setEmail] = useState<string>('admin@template.com');
-  const [password, setPassword] = useState<string>('password123');
+  const [email, setEmail] = useState<string>('admin@example.com');
+  const [password, setPassword] = useState<string>('123');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const validate = () => {
@@ -30,7 +30,7 @@ export function useLoginPage({
     if (!validate()) return;
 
     try {
-      await login({ email, passwordHash: password });
+      await login({ email, password: password });
       if (onSuccess) onSuccess();
     } catch {
       // Handled in AuthContext toast
