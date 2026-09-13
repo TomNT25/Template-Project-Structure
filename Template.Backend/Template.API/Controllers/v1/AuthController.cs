@@ -10,6 +10,8 @@ using Template.Application.Feature.v1.Auth.Register;
 using Template.Application.Feature.v1.Auth.VerifyOtp;
 using Template.Domain.Contract.RequestHandlerHub;
 using Template.Domain.DTO;
+using Template.Helper.Constant;
+using Template.Helper.Localization;
 
 namespace Project_Structure_Template.Controllers.v1
 {
@@ -19,10 +21,12 @@ namespace Project_Structure_Template.Controllers.v1
     public class AuthController : ControllerBase
     {
         private readonly IDispatcher _dispatcher;
+        private readonly IJsonStringLocalizer _localizer;
 
-        public AuthController(IDispatcher dispatcher)
+        public AuthController(IDispatcher dispatcher, IJsonStringLocalizer localizer)
         {
             _dispatcher = dispatcher;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -35,7 +39,8 @@ namespace Project_Structure_Template.Controllers.v1
         public async Task<ActionResult<BaseAPIResponse<LoginResponseDTO>>> Login([FromBody] LoginRequestDTO request)
         {
             var result = await _dispatcher.DispatchAsync<LoginResponseDTO>(request);
-            return Ok(BaseAPIResponse<LoginResponseDTO>.Success(result, "Login successful"));
+            var message = _localizer.GetString(MessageConstants.Auth.LoginSuccess);
+            return Ok(BaseAPIResponse<LoginResponseDTO>.Success(result, message));
         }
 
         /// <summary>
@@ -47,7 +52,8 @@ namespace Project_Structure_Template.Controllers.v1
         public async Task<ActionResult<BaseAPIResponse<RegisterResponseDTO>>> Register([FromBody] RegisterRequestDTO request)
         {
             var result = await _dispatcher.DispatchAsync<RegisterResponseDTO>(request);
-            return Ok(BaseAPIResponse<RegisterResponseDTO>.Success(result, "Registration successful"));
+            var message = _localizer.GetString(MessageConstants.Auth.RegisterSuccess);
+            return Ok(BaseAPIResponse<RegisterResponseDTO>.Success(result, message));
         }
 
         /// <summary>
@@ -61,7 +67,8 @@ namespace Project_Structure_Template.Controllers.v1
         {
             var req = request ?? new LogoutRequestDTO();
             var result = await _dispatcher.DispatchAsync<LogoutResponseDTO>(req);
-            return Ok(BaseAPIResponse<LogoutResponseDTO>.Success(result, "Logged out successfully"));
+            var message = _localizer.GetString(MessageConstants.Auth.LogoutSuccess);
+            return Ok(BaseAPIResponse<LogoutResponseDTO>.Success(result, message));
         }
 
         /// <summary>
@@ -73,7 +80,8 @@ namespace Project_Structure_Template.Controllers.v1
         public async Task<ActionResult<BaseAPIResponse<SendOtpResponseDTO>>> SendOtp([FromBody] SendOtpRequestDTO request)
         {
             var result = await _dispatcher.DispatchAsync<SendOtpResponseDTO>(request);
-            return Ok(BaseAPIResponse<SendOtpResponseDTO>.Success(result, "OTP sent successfully to email"));
+            var message = _localizer.GetString(MessageConstants.Auth.SendOtpSuccess);
+            return Ok(BaseAPIResponse<SendOtpResponseDTO>.Success(result, message));
         }
 
         /// <summary>
@@ -86,7 +94,8 @@ namespace Project_Structure_Template.Controllers.v1
         public async Task<ActionResult<BaseAPIResponse<VerifyOtpResponseDTO>>> VerifyOtp([FromBody] VerifyOtpRequestDTO request)
         {
             var result = await _dispatcher.DispatchAsync<VerifyOtpResponseDTO>(request);
-            return Ok(BaseAPIResponse<VerifyOtpResponseDTO>.Success(result, "Email verified successfully"));
+            var message = _localizer.GetString(MessageConstants.Auth.VerifyOtpSuccess);
+            return Ok(BaseAPIResponse<VerifyOtpResponseDTO>.Success(result, message));
         }
 
         /// <summary>
@@ -98,7 +107,8 @@ namespace Project_Structure_Template.Controllers.v1
         public async Task<ActionResult<BaseAPIResponse<ForgotPasswordResponseDTO>>> ForgotPassword([FromBody] ForgotPasswordRequestDTO request)
         {
             var result = await _dispatcher.DispatchAsync<ForgotPasswordResponseDTO>(request);
-            return Ok(BaseAPIResponse<ForgotPasswordResponseDTO>.Success(result, "Password reset OTP generated successfully"));
+            var message = _localizer.GetString(MessageConstants.Auth.ForgotPasswordSuccess);
+            return Ok(BaseAPIResponse<ForgotPasswordResponseDTO>.Success(result, message));
         }
 
         /// <summary>
@@ -110,7 +120,8 @@ namespace Project_Structure_Template.Controllers.v1
         public async Task<ActionResult<BaseAPIResponse<ResetPasswordResponseDTO>>> ResetPassword([FromBody] ResetPasswordRequestDTO request)
         {
             var result = await _dispatcher.DispatchAsync<ResetPasswordResponseDTO>(request);
-            return Ok(BaseAPIResponse<ResetPasswordResponseDTO>.Success(result, "Password reset successfully"));
+            var message = _localizer.GetString(MessageConstants.Auth.ResetPasswordSuccess);
+            return Ok(BaseAPIResponse<ResetPasswordResponseDTO>.Success(result, message));
         }
 
         /// <summary>
@@ -123,23 +134,26 @@ namespace Project_Structure_Template.Controllers.v1
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<BaseAPIResponse<GetMeResponseDTO>>> GetMe()
         {
-            var userId = User.FindFirst("uid")?.Value
+            var userId = User.FindFirst(AuthConstants.Claims.UserId)?.Value
                          ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                          ?? User.FindFirst(ClaimTypes.Email)?.Value
                          ?? string.Empty;
 
             if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized(BaseAPIResponse<GetMeResponseDTO>.Failure("User identity could not be retrieved from token.", 401));
+                var errMessage = _localizer.GetString(MessageConstants.Auth.IdentityNotFound);
+                return Unauthorized(BaseAPIResponse<GetMeResponseDTO>.Failure(errMessage, StatusCodes.Status401Unauthorized));
             }
 
             var result = await _dispatcher.DispatchAsync<GetMeResponseDTO?>(new GetMeQuery(userId));
             if (result == null)
             {
-                return NotFound(BaseAPIResponse<GetMeResponseDTO>.Failure("User profile not found.", 404));
+                var notFoundMessage = _localizer.GetString(MessageConstants.Auth.UserNotFound);
+                return NotFound(BaseAPIResponse<GetMeResponseDTO>.Failure(notFoundMessage, StatusCodes.Status404NotFound));
             }
 
-            return Ok(BaseAPIResponse<GetMeResponseDTO>.Success(result, "User profile retrieved successfully"));
+            var successMessage = _localizer.GetString(MessageConstants.Auth.GetMeSuccess);
+            return Ok(BaseAPIResponse<GetMeResponseDTO>.Success(result, successMessage));
         }
     }
 }

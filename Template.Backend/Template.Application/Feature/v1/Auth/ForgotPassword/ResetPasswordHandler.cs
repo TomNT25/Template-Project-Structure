@@ -1,6 +1,7 @@
 using Template.Domain.Contract.Repository.Enitity.v1;
 using Template.Domain.Contract.RequestHandlerHub;
 using Template.Domain.Contract.Util;
+using Template.Helper.Constant;
 
 namespace Template.Application.Feature.v1.Auth.ForgotPassword
 {
@@ -25,13 +26,13 @@ namespace Template.Application.Feature.v1.Auth.ForgotPassword
             var isValid = _otpService.VerifyOtp($"forgot_password_{request.Email}", request.OtpCode);
             if (!isValid)
             {
-                throw new InvalidOperationException("Invalid or expired reset OTP code.");
+                throw new InvalidOperationException(MessageConstants.Auth.InvalidOrExpiredOtp);
             }
 
             var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
             if (user == null)
             {
-                throw new KeyNotFoundException("No user found with the provided email address.");
+                throw new KeyNotFoundException(MessageConstants.Auth.UserNotFound);
             }
 
             user.PasswordHash = _passwordHasherService.HashPassword(request.NewPassword);
@@ -43,7 +44,7 @@ namespace Template.Application.Feature.v1.Auth.ForgotPassword
             {
                 Email = request.Email,
                 Success = true,
-                Message = "Password reset successfully"
+                Message = MessageConstants.Auth.ResetPasswordSuccess
             };
         }
     }

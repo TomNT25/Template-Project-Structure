@@ -3,6 +3,7 @@ using Template.Domain.Contract.Repository.Enitity.v1;
 using Template.Domain.Contract.RequestHandlerHub;
 using Template.Domain.Contract.Util;
 using Template.Domain.Entity;
+using Template.Helper.Constant;
 
 namespace Template.Application.Feature.v1.Auth.Register
 {
@@ -33,27 +34,26 @@ namespace Template.Application.Feature.v1.Auth.Register
             var existingByEmail = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
             if (existingByEmail != null)
             {
-                throw new InvalidOperationException("Email is already registered.");
+                throw new InvalidOperationException(MessageConstants.Auth.EmailRegistered);
             }
 
             var existingByUsername = await _userRepository.GetByUsernameAsync(request.Username, cancellationToken);
             if (existingByUsername != null)
             {
-                throw new InvalidOperationException("Username is already taken.");
+                throw new InvalidOperationException(MessageConstants.Auth.UsernameTaken);
             }
 
             var defaultRole = await _roleRepository.GetDefaultRoleAsync(cancellationToken);
             if (defaultRole == null)
             {
-                throw new InvalidOperationException("Default system role could not be found.");
+                throw new InvalidOperationException(MessageConstants.Auth.DefaultRoleNotFound);
             }
 
-            // Map Request DTO -> User Entity via Mapster
             var newUser = _mapper.Map<User>(request);
             newUser.Id = Guid.NewGuid().ToString();
             newUser.PasswordHash = _passwordHasherService.HashPassword(request.Password);
             newUser.RoleId = defaultRole.Id;
-            newUser.Provider = "system";
+            newUser.Provider = AuthConstants.Providers.System;
             newUser.IsActive = true;
             newUser.IsEmailVerified = false;
             newUser.CreatedAt = DateTime.UtcNow;
@@ -63,7 +63,6 @@ namespace Template.Application.Feature.v1.Auth.Register
 
             var otpCode = _otpService.GenerateOtp($"verify_email_{request.Email}");
 
-            // Map User Entity -> Response DTO via Mapster
             var response = _mapper.Map<RegisterResponseDTO>(newUser);
             response.OtpCode = otpCode;
 

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Template.Helper.Constant;
 
 namespace Template.API.Extensions
 {
@@ -6,30 +7,28 @@ namespace Template.API.Extensions
     {
         public static void AddCorsService(this IServiceCollection services)
         {
-            services.AddCors(delegate (CorsOptions options)
+            services.AddCors(options =>
             {
-                options.AddDefaultPolicy(delegate (CorsPolicyBuilder builder)
+                options.AddDefaultPolicy(builder =>
                 {
                     builder.AllowAnyMethod()
-                            .SetPreflightMaxAge(TimeSpan.FromDays(1.0))
-                            .SetIsOriginAllowed((string origin) =>
-                            {
-                                // Allow localhost for local development/debugging
-                                if (string.IsNullOrEmpty(origin))
-                                    return false;
+                           .SetPreflightMaxAge(TimeSpan.FromDays(1.0))
+                           .SetIsOriginAllowed((string origin) =>
+                           {
+                               if (string.IsNullOrEmpty(origin))
+                                   return false;
 
-                                if (origin.StartsWith("http://localhost", StringComparison.OrdinalIgnoreCase) ||
-                                    origin.StartsWith("https://localhost", StringComparison.OrdinalIgnoreCase) ||
-                                    origin.Equals("null", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    return true;
-                                }
+                               if (origin.StartsWith(CorsPolicyConstants.HttpLocalhostPrefix, StringComparison.OrdinalIgnoreCase) ||
+                                   origin.StartsWith(CorsPolicyConstants.HttpsLocalhostPrefix, StringComparison.OrdinalIgnoreCase) ||
+                                   origin.Equals(CorsPolicyConstants.NullOrigin, StringComparison.OrdinalIgnoreCase))
+                               {
+                                   return true;
+                               }
 
-                                // Production: only allow specific domains over HTTPS
-                                return (origin.EndsWith(".avepointonlineservices.com", StringComparison.OrdinalIgnoreCase) ||
-                                        origin.EndsWith(".sharepointguild.com", StringComparison.OrdinalIgnoreCase)) &&
-                                       Uri.TryCreate(origin, UriKind.Absolute, out Uri? _);
-                            })
+                               return (origin.EndsWith(CorsPolicyConstants.AvepointDomainSuffix, StringComparison.OrdinalIgnoreCase) ||
+                                       origin.EndsWith(CorsPolicyConstants.SharepointGuildDomainSuffix, StringComparison.OrdinalIgnoreCase)) &&
+                                      Uri.TryCreate(origin, UriKind.Absolute, out Uri? _);
+                           })
                            .AllowAnyHeader()
                            .AllowCredentials();
                 });

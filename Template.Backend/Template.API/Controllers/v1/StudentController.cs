@@ -6,6 +6,8 @@ using Template.Application.Feature.v1.Student.AddStudent;
 using Template.Application.Feature.v1.Student.DeleteStudent;
 using Template.Application.Feature.v1.Student.GetAllStudent;
 using Template.Application.Feature.v1.Student.UpdateStudent;
+using Template.Helper.Constant;
+using Template.Helper.Localization;
 
 namespace Project_Structure_Template.Controllers.v1
 {
@@ -15,10 +17,12 @@ namespace Project_Structure_Template.Controllers.v1
     public class StudentController : ControllerBase
     {
         private readonly IDispatcher _dispatcher;
+        private readonly IJsonStringLocalizer _localizer;
 
-        public StudentController(IDispatcher dispatcher)
+        public StudentController(IDispatcher dispatcher, IJsonStringLocalizer localizer)
         {
             _dispatcher = dispatcher;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -33,7 +37,8 @@ namespace Project_Structure_Template.Controllers.v1
         public async Task<ActionResult<BaseAPIResponse<GetAllStudentResponseDTO>>> GetAllStudent([FromQuery] GetAllStudentRequestDTO request)
         {
             var result = await _dispatcher.DispatchAsync<GetAllStudentResponseDTO>(request);
-            return Ok(BaseAPIResponse<GetAllStudentResponseDTO>.Success(result, "Get All Student successful"));
+            var message = _localizer.GetString(MessageConstants.Student.GetAllSuccess);
+            return Ok(BaseAPIResponse<GetAllStudentResponseDTO>.Success(result, message));
         }
 
         /// <summary>
@@ -43,13 +48,14 @@ namespace Project_Structure_Template.Controllers.v1
         /// <response code="200">Get Student By ID Success</response>
         /// <response code="400">Get Student By ID Fail</response>
         [HttpGet("id")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<BaseAPIResponse<GetAllStudentResponseDTO>>> GetStudentByID([FromBody] GetAllStudentRequestDTO request)
         {
             var result = await _dispatcher.DispatchAsync<GetAllStudentResponseDTO>(request);
-            return Ok(BaseAPIResponse<GetAllStudentResponseDTO>.Success(result, "Get All Student successful"));
+            var message = _localizer.GetString(MessageConstants.Student.GetByIdSuccess);
+            return Ok(BaseAPIResponse<GetAllStudentResponseDTO>.Success(result, message));
         }
 
         /// <summary>
@@ -59,14 +65,14 @@ namespace Project_Structure_Template.Controllers.v1
         /// <response code="200">Add Student success</response>
         /// <response code="400">Add Student fail</response>
         [HttpPost]
-        [ProducesResponseType(typeof(BaseAPIResponse<AddStudentRequestDTO>), StatusCodes.Status200OK)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        //[Policy]
+        [ProducesResponseType(typeof(BaseAPIResponse<AddStudentResponseDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<BaseAPIResponse<AddStudentResponseDTO>>> AddStudent([FromBody] AddStudentRequestDTO request)
         {
             var result = await _dispatcher.DispatchAsync<AddStudentResponseDTO>(request);
-            return Ok(BaseAPIResponse<AddStudentResponseDTO>.Success(result, "Add Student successful"));
+            var message = _localizer.GetString(MessageConstants.Student.AddSuccess);
+            return Ok(BaseAPIResponse<AddStudentResponseDTO>.Success(result, message));
         }
 
         /// <summary>
@@ -79,11 +85,11 @@ namespace Project_Structure_Template.Controllers.v1
         [ProducesResponseType(typeof(BaseAPIResponse<UpdateStudentResponseDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[Policy]
         public async Task<ActionResult<BaseAPIResponse<UpdateStudentResponseDTO>>> UpdateStudent([FromBody] UpdateStudentRequestDTO request)
         {
             var result = await _dispatcher.DispatchAsync<UpdateStudentResponseDTO>(request);
-            return Ok(BaseAPIResponse<UpdateStudentResponseDTO>.Success(result, "Update Student successful"));
+            var message = _localizer.GetString(MessageConstants.Student.UpdateSuccess);
+            return Ok(BaseAPIResponse<UpdateStudentResponseDTO>.Success(result, message));
         }
 
         /// <summary>
@@ -96,11 +102,11 @@ namespace Project_Structure_Template.Controllers.v1
         [ProducesResponseType(typeof(BaseAPIResponse<DeleteStudentResponseDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[Policy]
         public async Task<ActionResult<BaseAPIResponse<DeleteStudentResponseDTO>>> DeleteStudent([FromBody] DeleteStudentRequestDTO request)
         {
             var result = await _dispatcher.DispatchAsync<DeleteStudentResponseDTO>(request);
-            return Ok(BaseAPIResponse<DeleteStudentResponseDTO>.Success(result, "Delete Student successful"));
+            var message = _localizer.GetString(MessageConstants.Student.DeleteSuccess);
+            return Ok(BaseAPIResponse<DeleteStudentResponseDTO>.Success(result, message));
         }
     }
 }

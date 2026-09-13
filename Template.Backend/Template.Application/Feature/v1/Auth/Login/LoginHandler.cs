@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Template.Domain.Contract.RequestHandlerHub;
 using Template.Domain.Contract.Util;
+using Template.Helper.Constant;
 
 namespace Template.Application.Feature.v1.Auth.Login
 {
@@ -28,18 +29,18 @@ namespace Template.Application.Feature.v1.Auth.Login
             var getUserByEmailResult = await _dispatcher.DispatchAsync(new GetUserByEmailQuery(request.Email), cancellationToken);
             if (getUserByEmailResult == null)
             {
-                throw new UnauthorizedAccessException("Invalid email or password");
+                throw new UnauthorizedAccessException(MessageConstants.Auth.InvalidCredentials);
             }
 
             var passwordMatch = _passwordHasherService.VerifyHashedPassword(getUserByEmailResult.PasswordHash, request.Password);
             if (!passwordMatch)
             {
-                throw new UnauthorizedAccessException("Invalid email or password");
+                throw new UnauthorizedAccessException(MessageConstants.Auth.InvalidCredentials);
             }
 
             var accessToken = _jwtService.GenerateAccessToken(getUserByEmailResult);
             var refreshToken = _jwtService.GenerateRefreshToken();
-            var tokenExpireMinutes = int.Parse(_configuration["Jwt:TokenExpireMinutes"] ?? "60");
+            var tokenExpireMinutes = int.Parse(_configuration[AuthConstants.JwtConfig.TokenExpireMinutesPath] ?? AuthConstants.JwtConfig.DefaultTokenExpireMinutes.ToString());
 
             return new LoginResponseDTO
             {

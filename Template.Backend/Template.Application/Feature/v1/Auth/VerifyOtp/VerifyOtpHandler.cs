@@ -1,6 +1,7 @@
 using Template.Domain.Contract.Repository.Enitity.v1;
 using Template.Domain.Contract.RequestHandlerHub;
 using Template.Domain.Contract.Util;
+using Template.Helper.Constant;
 
 namespace Template.Application.Feature.v1.Auth.VerifyOtp
 {
@@ -20,13 +21,13 @@ namespace Template.Application.Feature.v1.Auth.VerifyOtp
             var isValid = _otpService.VerifyOtp($"verify_email_{request.Email}", request.OtpCode);
             if (!isValid)
             {
-                throw new InvalidOperationException("Invalid or expired OTP code.");
+                throw new InvalidOperationException(MessageConstants.Auth.InvalidOrExpiredOtp);
             }
 
             var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
             if (user == null)
             {
-                throw new KeyNotFoundException("No user found with the provided email address.");
+                throw new KeyNotFoundException(MessageConstants.Auth.UserNotFound);
             }
 
             user.IsEmailVerified = true;
@@ -39,7 +40,7 @@ namespace Template.Application.Feature.v1.Auth.VerifyOtp
             {
                 Email = request.Email,
                 IsVerified = true,
-                Message = "Email verified successfully"
+                Message = MessageConstants.Auth.VerifyOtpSuccess
             };
         }
     }

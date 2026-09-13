@@ -1,0 +1,28 @@
+{
+  "Auth.LoginSuccess": "Login successful",
+  "Auth.RegisterSuccess": "Registration successful",
+  "Auth.LogoutSuccess": "Logged out successfully",
+  "Auth.SendOtpSuccess": "OTP sent successfully to email",
+  "Auth.VerifyOtpSuccess": "Email verified successfully",
+  "Auth.ForgotPasswordSuccess": "Password reset OTP generated successfully",
+  "Auth.ResetPasswordSuccess": "Password reset successfully",
+  "Auth.GetMeSuccess": "User profile retrieved successfully",
+  "Auth.InvalidCredentials": "Invalid email or password",
+  "Auth.EmailRegistered": "Email is already registered.",
+  "Auth.UsernameTaken": "Username is already taken.",
+  "Auth.DefaultRoleNotFound": "Default system role could not be found.",
+  "Auth.InvalidOrExpiredOtp": "Invalid or expired OTP code.",
+  "Auth.UserNotFound": "No user found with the provided email address.",
+  "Auth.IdentityNotFound": "User identity could not be retrieved from token.",
+
+  "Student.GetAllSuccess": "Get All Student successful",
+  "Student.GetByIdSuccess": "Get Student by ID successful",
+  "Student.AddSuccess": "Add Student successful",
+  "Student.UpdateSuccess": "Update Student successful",
+  "Student.DeleteSuccess": "Delete Student successful",
+
+  "System.ValidationFailed": "Validation failed",
+  "System.UnexpectedError": "An unexpected error occurred.",
+  "System.ResourceNotFound": "The requested resource was not found.",
+  "System.UnauthorizedAccess": "Unauthorized access."
+}

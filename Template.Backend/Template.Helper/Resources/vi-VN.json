@@ -1,0 +1,28 @@
+{
+  "Auth.LoginSuccess": "Đăng nhập thành công",
+  "Auth.RegisterSuccess": "Đăng ký tài khoản thành công",
+  "Auth.LogoutSuccess": "Đăng xuất thành công",
+  "Auth.SendOtpSuccess": "Mã OTP đã được gửi đến email thành công",
+  "Auth.VerifyOtpSuccess": "Xác thực email thành công",
+  "Auth.ForgotPasswordSuccess": "Tạo mã OTP khôi phục mật khẩu thành công",
+  "Auth.ResetPasswordSuccess": "Đặt lại mật khẩu thành công",
+  "Auth.GetMeSuccess": "Lấy thông tin tài khoản thành công",
+  "Auth.InvalidCredentials": "Email hoặc mật khẩu không chính xác",
+  "Auth.EmailRegistered": "Email này đã được đăng ký.",
+  "Auth.UsernameTaken": "Tên đăng nhập đã tồn tại.",
+  "Auth.DefaultRoleNotFound": "Không tìm thấy vai trò hệ thống mặc định.",
+  "Auth.InvalidOrExpiredOtp": "Mã OTP không hợp lệ hoặc đã hết hạn.",
+  "Auth.UserNotFound": "Không tìm thấy người dùng với địa chỉ email đã cung cấp.",
+  "Auth.IdentityNotFound": "Không thể lấy thông tin người dùng từ token.",
+
+  "Student.GetAllSuccess": "Lấy danh sách sinh viên thành công",
+  "Student.GetByIdSuccess": "Lấy thông tin sinh viên theo ID thành công",
+  "Student.AddSuccess": "Thêm sinh viên thành công",
+  "Student.UpdateSuccess": "Cập nhật thông tin sinh viên thành công",
+  "Student.DeleteSuccess": "Xóa sinh viên thành công",
+
+  "System.ValidationFailed": "Dữ liệu không hợp lệ",
+  "System.UnexpectedError": "Đã xảy ra lỗi không mong muốn.",
+  "System.ResourceNotFound": "Không tìm thấy tài nguyên yêu cầu.",
+  "System.UnauthorizedAccess": "Không có quyền truy cập."
+}

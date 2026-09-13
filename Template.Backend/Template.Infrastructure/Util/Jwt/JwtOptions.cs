@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
+using Template.Helper.Constant;
 
 namespace Template.Infrastructure.Util.Jwt
 {
@@ -17,21 +15,21 @@ namespace Template.Infrastructure.Util.Jwt
     public static class ClaimType
     {
         #region claim types
-        public static readonly string Realm = "realm";
-        public static readonly string Scope = "scope";
+        public static readonly string Realm = AuthConstants.Claims.Realm;
+        public static readonly string Scope = AuthConstants.Claims.Scope;
         public static readonly string Issuer = "iss";
         public static readonly string Audience = "aud";
-        public static readonly string CustomerId = "customer_id";
-        public static readonly string ClientId = "client_id";
+        public static readonly string CustomerId = AuthConstants.Claims.CustomerId;
+        public static readonly string ClientId = AuthConstants.Claims.ClientId;
         public static readonly string UserName = ClaimTypes.Upn;
-        public static readonly string Language = "language";
+        public static readonly string Language = AuthConstants.Claims.Language;
         public static readonly string DisplayName = ClaimTypes.Name;
         public static readonly string Email = ClaimTypes.Email;
-        public static readonly string Organization = "organization";
-        public static readonly string UserObjectId = "uid";
-        public static readonly string Office365TenantId = "office365TenantId";
-        public static readonly string UserGroups = "user_groups";
-        public static readonly string CloudUserId = "objectid";
+        public static readonly string Organization = AuthConstants.Claims.Organization;
+        public static readonly string UserObjectId = AuthConstants.Claims.UserId;
+        public static readonly string Office365TenantId = AuthConstants.Claims.Office365TenantId;
+        public static readonly string UserGroups = AuthConstants.Claims.UserGroups;
+        public static readonly string CloudUserId = AuthConstants.Claims.CloudUserId;
         public static readonly string Role = ClaimTypes.Role;
         #endregion
     }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using Template.Helper.Constant;
 
 namespace Template.API.Extensions
 {
@@ -9,10 +10,10 @@ namespace Template.API.Extensions
     {
         public static void AddAuthenticationPolicyService(this IServiceCollection services, IConfiguration configuration)
         {
-            var secretKey = configuration["Jwt:Secret"]
-                ?? throw new InvalidOperationException("Jwt:Secret configuration is missing in appsettings.json.");
-            var issuer = configuration["Jwt:Issuer"] ?? "Template";
-            var audience = configuration["Jwt:Audience"] ?? "Template-Users";
+            var secretKey = configuration[AuthConstants.JwtConfig.SecretKeyPath]
+                ?? throw new InvalidOperationException(ExceptionConstants.MissingJwtSecretMessage);
+            var issuer = configuration[AuthConstants.JwtConfig.IssuerPath] ?? AuthConstants.JwtConfig.DefaultIssuer;
+            var audience = configuration[AuthConstants.JwtConfig.AudiencePath] ?? AuthConstants.JwtConfig.DefaultAudience;
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
@@ -45,7 +46,7 @@ namespace Template.API.Extensions
                     {
                         if (context.Exception is SecurityTokenExpiredException)
                         {
-                            context.Response.Headers.Append("Token-Expired", "true");
+                            context.Response.Headers.Append(AuthConstants.Headers.TokenExpired, AuthConstants.Headers.ValueTrue);
                         }
                         return Task.CompletedTask;
                     }

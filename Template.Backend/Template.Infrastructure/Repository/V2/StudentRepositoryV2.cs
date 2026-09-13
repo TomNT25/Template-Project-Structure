@@ -149,35 +149,6 @@ public class StudentRepositoryV2 : Repository<Student>, IStudentRepository
     public override async Task<Student?> GetByIDAsync(int id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
-
-        //string query = "SELECT StudentID, StudentName FROM Students WHERE StudentID = @StudentID;";
-
-        //try
-        //{
-        //    using (SqlConnection conn = _databaseConfiguration.CreateSqlConnection())
-        //    using (SqlCommand cmd = _databaseConfiguration.CreateSqlCommand(query, conn))
-        //    {
-        //        cmd.Parameters.AddWithValue("@StudentID", id);
-
-        //        conn.Open();
-        //        using (SqlDataReader reader = cmd.ExecuteReader())
-        //        {
-        //            if (reader.Read())
-        //            {
-        //                return new Student()
-        //                {
-        //                    StudentID = Convert.ToInt32(reader["StudentID"]),
-        //                    StudentName = reader["StudentName"].ToString()
-        //                };
-        //            }
-        //        }
-        //    }
-        //    return null;
-        //}
-        //catch (SqlException ex)
-        //{
-        //    throw new DatabaseOperationException($"An error occurred while retrieving the Student with ID {id}.", ex);
-        //}
     }
 
     public override async Task<bool> UpdateAsync(Student entity, CancellationToken cancellationToken = default)
@@ -201,5 +172,10 @@ public class StudentRepositoryV2 : Repository<Student>, IStudentRepository
         {
             throw new DatabaseOperationException("An error occurred while updating the Student.", ex);
         }
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(0);
     }
 }

@@ -2,6 +2,7 @@ using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using Template.Domain.Contract.Repository.Enitity.v1;
 using Template.Domain.Entity;
+using Template.Helper.Constant;
 using Template.Infrastructure.Database;
 using Template.Infrastructure.Repository.Base;
 
@@ -20,7 +21,7 @@ namespace Template.Infrastructure.Repository.V1
 
         public async Task<Role?> GetDefaultRoleAsync(CancellationToken cancellationToken = default)
         {
-            var role = await _dbSet.FirstOrDefaultAsync(r => r.Code == "ROLE_USER" || r.Name == "User", cancellationToken);
+            var role = await _dbSet.FirstOrDefaultAsync(r => r.Code == DatabaseConstants.Roles.UserCode || r.Name == DatabaseConstants.Roles.UserName, cancellationToken);
             return role ?? await _dbSet.FirstOrDefaultAsync(cancellationToken);
         }
     }

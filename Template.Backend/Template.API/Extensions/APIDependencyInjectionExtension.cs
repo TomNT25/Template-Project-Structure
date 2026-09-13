@@ -20,6 +20,8 @@ namespace Template.API.Extensions
 
             services.AddCorsService();
 
+            services.AddBackendLocalizationServices();
+
             services.AddExceptionHandler<GlobalExceptionExtension>();
 
             services.AddProblemDetails();

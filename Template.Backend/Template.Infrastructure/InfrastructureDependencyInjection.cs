@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using Template.Domain.Contract.Cache;
 using Template.Domain.Contract.RequestHandlerHub;
+using Template.Domain.Contract.UnitOfWork;
 using Template.Helper.Constant;
 using Template.Infrastructure.Database;
 using Template.Infrastructure.RequestHandlerHub;
@@ -20,6 +21,8 @@ public static class InfrastructureDependencyInjection
 
         services.AddTransient<IDispatcher, NativeDispatcher>();
 
+        services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
+
         services.Scan(scan => scan
             .FromAssemblies(assembly)
             .AddClasses(classes => classes
@@ -29,13 +32,13 @@ public static class InfrastructureDependencyInjection
             .WithScopedLifetime());
 
         // Redis Configuration
-        var redisConn = configuration["Redis:ConnectionString"];
+        var redisConn = configuration[CacheConstants.RedisConnectionStringPath];
         if (!string.IsNullOrWhiteSpace(redisConn))
         {
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = redisConn;
-                options.InstanceName = configuration["Redis:InstanceName"] ?? "TemplateApp:";
+                options.InstanceName = configuration[CacheConstants.RedisInstanceNamePath] ?? CacheConstants.DefaultInstanceName;
             });
         }
 
@@ -54,7 +57,7 @@ public static class InfrastructureDependencyInjection
         var healthChecks = services.AddHealthChecks().AddDbContextCheck<TemplateDbContext>();
         if (!string.IsNullOrWhiteSpace(redisConn))
         {
-            healthChecks.AddRedis(redisConn, name: "redis_check");
+            healthChecks.AddRedis(redisConn, name: CacheConstants.HealthCheckName);
         }
 
         return services;
