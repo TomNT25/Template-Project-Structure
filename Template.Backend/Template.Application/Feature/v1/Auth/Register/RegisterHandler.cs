@@ -49,7 +49,7 @@ namespace Template.Application.Feature.v1.Auth.Register
                 throw new InvalidOperationException(MessageConstants.Auth.DefaultRoleNotFound);
             }
 
-            var newUser = _mapper.Map<User>(request);
+            var newUser = _mapper.Map<Domain.Entity.User>(request);
             newUser.Id = Guid.NewGuid().ToString();
             newUser.PasswordHash = _passwordHasherService.HashPassword(request.Password);
             newUser.RoleId = defaultRole.Id;

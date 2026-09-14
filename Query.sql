@@ -47,3 +47,98 @@ BEGIN
     );
 END
 GO
+
+DECLARE @AdminRoleId VARCHAR(50) = '018f4b5a-1a2b-7c3d-8e4f-5a6b7c8d9e0f';
+DECLARE @AdminUserId VARCHAR(50) = '018f4b5a-2b3c-7d4e-8f5a-6b7c8d9e0f1a';
+
+-- 4. Insert Permissions
+-- Relying on the DF_permissions_id default constraint to auto-generate the UUIDs
+
+IF NOT EXISTS (SELECT 1 FROM permissions WHERE name = 'GetAllStudent')
+BEGIN
+    INSERT INTO permissions (code, name, description, resource, action, is_active)
+    VALUES ('PERM_STU_GET_ALL', 'GetAllStudent', 'View list of all students', 'STUDENT', 'GET_ALL', 1);
+END
+
+IF NOT EXISTS (SELECT 1 FROM permissions WHERE name = 'GetStudentByID')
+BEGIN
+    INSERT INTO permissions (code, name, description, resource, action, is_active)
+    VALUES ('PERM_STU_GET_BY_ID', 'GetStudentByID', 'View details of a specific student', 'STUDENT', 'GET_BY_ID', 1);
+END
+
+IF NOT EXISTS (SELECT 1 FROM permissions WHERE name = 'AddStudent')
+BEGIN
+    INSERT INTO permissions (code, name, description, resource, action, is_active)
+    VALUES ('PERM_STU_ADD', 'AddStudent', 'Add a new student to the system', 'STUDENT', 'ADD', 1);
+END
+
+IF NOT EXISTS (SELECT 1 FROM permissions WHERE name = 'UpdateStudent')
+BEGIN
+    INSERT INTO permissions (code, name, description, resource, action, is_active)
+    VALUES ('PERM_STU_UPDATE', 'UpdateStudent', 'Update an existing student''s information', 'STUDENT', 'UPDATE', 1);
+END
+
+IF NOT EXISTS (SELECT 1 FROM permissions WHERE name = 'DeleteStudent')
+BEGIN
+    INSERT INTO permissions (code, name, description, resource, action, is_active)
+    VALUES ('PERM_STU_DELETE', 'DeleteStudent', 'Remove a student from the system', 'STUDENT', 'DELETE', 1);
+END
+
+-- 5. Map Permissions to the Admin Role
+-- We find the generated IDs based on the permission names and link them to @AdminRoleId
+-- The IF NOT EXISTS check ensures we don't insert duplicate mappings if run multiple times.
+
+INSERT INTO role_permissions (role_id, permission_id, assigned_at, is_active)
+SELECT
+    @AdminRoleId, 
+    p.id, 
+    GETDATE(), 
+    1
+FROM permissions p
+WHERE p.name IN (
+    'GetAllStudent', 
+    'GetStudentByID', 
+    'AddStudent', 
+    'UpdateStudent', 
+    'DeleteStudent'
+)
+AND NOT EXISTS (
+    SELECT 1 
+    FROM role_permissions rp 
+    WHERE rp.role_id = @AdminRoleId AND rp.permission_id = p.id
+);
+
+GO
+
+-- Declare the static User ID we used earlier
+DECLARE @AdminUserId VARCHAR(50) = '018f4b5a-2b3c-7d4e-8f5a-6b7c8d9e0f1a';
+
+-- Insert direct user-level permissions
+INSERT INTO user_permissions (
+    user_id, 
+    permission_id, 
+    assigned_at, 
+    is_active
+)
+SELECT 
+    @AdminUserId, 
+    p.id, 
+    GETDATE(), 
+    1
+FROM permissions p
+WHERE p.name IN (
+    'GetAllStudent', 
+    'GetStudentByID', 
+    'AddStudent', 
+    'UpdateStudent', 
+    'DeleteStudent'
+)
+-- Ensure we don't insert duplicate mappings if the script is run again
+AND NOT EXISTS (
+    SELECT 1 
+    FROM user_permissions up 
+    WHERE up.user_id = @AdminUserId 
+      AND up.permission_id = p.id
+);
+
+GO

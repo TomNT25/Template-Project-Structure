@@ -19,15 +19,15 @@ namespace Template.Infrastructure.Database.ModelCreating
                 entity.Property(e => e.AssignedBy).HasColumnName("assigned_by");
                 entity.Property(e => e.IsActive).HasColumnName("is_active");
 
-                //entity.HasOne(e => e.User)
-                //    .WithMany(u => u.UserRoles)
-                //    .HasForeignKey(e => e.UserId)
-                //    .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.User)
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
-                //entity.HasOne(e => e.Role)
-                //    .WithMany(r => r.UserRoles)
-                //    .HasForeignKey(e => e.RoleId)
-                //    .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.Role)
+                    .WithMany()
+                    .HasForeignKey(e => e.RoleId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

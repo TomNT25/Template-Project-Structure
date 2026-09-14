@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Template.Helper.Constant;
 
 namespace Template.API.Extensions

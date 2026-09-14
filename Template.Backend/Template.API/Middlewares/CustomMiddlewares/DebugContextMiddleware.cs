@@ -34,10 +34,16 @@ namespace Template.API.Middlewares.CustomMiddlewares
                         {
                             new Claim(ClaimType.UserName, "admin@template.com"),
                             new Claim(ClaimType.Email, "admin@template.com"),
-                            new Claim(ClaimType.UserObjectId, "admin-system-id"),
+                            new Claim(ClaimType.UserObjectId, "018f4b5a-2b3c-7d4e-8f5a-6b7c8d9e0f1a"),
                             new Claim(ClaimType.DisplayName, "System Administrator"),
                             new Claim(ClaimType.Role, "Admin"),
-                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                            new Claim(ClaimType.CustomerId, ClaimType.CustomerId),
+                            new Claim(ClaimType.Office365TenantId, ClaimType.Office365TenantId),
+                            new Claim(ClaimType.Organization, ClaimType.Organization),
+                            new Claim(ClaimType.Language, ClaimType.Language),
+                            new Claim(ClaimType.DisplayName, ClaimType.DisplayName),
+                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                            new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
                         }),
                         Issuer = _configuration["Jwt:Issuer"] ?? "Template",
                         Audience = _configuration["Jwt:Audience"] ?? "Template-Users",

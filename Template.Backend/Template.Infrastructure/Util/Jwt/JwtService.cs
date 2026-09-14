@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -7,112 +6,114 @@ using System.Security.Cryptography;
 using System.Text;
 using Template.Domain.Contract.Util;
 using Template.Domain.DTO.Entity;
-using Template.Infrastructure.Database;
 using Template.Infrastructure.Util.Jwt;
 
-public class JwtService : IJwtService
+namespace TemplatE.Infrastructure.Util
 {
-    private readonly JwtOptions _options;
-    private readonly SymmetricSecurityKey _securityKey;
-    private readonly JwtSecurityTokenHandler _tokenHandler;
-
-    public JwtService(IConfiguration configuration)
+    public class JwtService : IJwtService
     {
-        _options = new JwtOptions();
-        var section = configuration.GetSection("Jwt");
-        section.Bind(_options);
+        private readonly JwtOptions _options;
+        private readonly SymmetricSecurityKey _securityKey;
+        private readonly JwtSecurityTokenHandler _tokenHandler;
 
-        if (string.IsNullOrWhiteSpace(_options.Secret) || _options.Secret.Length < 32)
-            throw new InvalidOperationException("JWT Secret must be configured and at least 256 bits (32 characters) long.");
-
-        _securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
-        _tokenHandler = new JwtSecurityTokenHandler();
-    }
-
-    public string GenerateAccessToken(UserDTO user)
-    {
-        var credentials = new SigningCredentials(_securityKey, SecurityAlgorithms.HmacSha256);
-
-        var claims = new List<Claim>
+        public JwtService(IConfiguration configuration)
         {
-            new Claim(ClaimType.UserName, user.Username),
-            new Claim(ClaimType.Email, user.Email),
-            new Claim(ClaimType.CustomerId, ClaimType.CustomerId),
-            new Claim(ClaimType.Office365TenantId, ClaimType.Office365TenantId),
-            new Claim(ClaimType.Organization, ClaimType.Organization),
-            new Claim(ClaimType.UserObjectId, user.Id),
-            new Claim(ClaimType.Language, ClaimType.Language),
-            new Claim(ClaimType.DisplayName, ClaimType.DisplayName),
-            new Claim(ClaimType.Role, user.RoleName ?? string.Empty),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
-        };
+            _options = new JwtOptions();
+            var section = configuration.GetSection("Jwt");
+            section.Bind(_options);
 
-        var tokenDescriptor = new SecurityTokenDescriptor
+            if (string.IsNullOrWhiteSpace(_options.Secret) || _options.Secret.Length < 32)
+                throw new InvalidOperationException("JWT Secret must be configured and at least 256 bits (32 characters) long.");
+
+            _securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
+            _tokenHandler = new JwtSecurityTokenHandler();
+        }
+
+        public string GenerateAccessToken(UserDTO user)
         {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(_options.TokenExpireMinutes),
-            Issuer = _options.Issuer,
-            Audience = _options.Audience,
-            SigningCredentials = credentials
-        };
+            var credentials = new SigningCredentials(_securityKey, SecurityAlgorithms.HmacSha256);
 
-        var token = _tokenHandler.CreateToken(tokenDescriptor);
-        return _tokenHandler.WriteToken(token);
-    }
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimType.UserName, user.Username),
+                new Claim(ClaimType.Email, user.Email),
+                new Claim(ClaimType.CustomerId, ClaimType.CustomerId),
+                new Claim(ClaimType.Office365TenantId, ClaimType.Office365TenantId),
+                new Claim(ClaimType.Organization, ClaimType.Organization),
+                new Claim(ClaimType.UserObjectId, user.Id),
+                new Claim(ClaimType.Language, ClaimType.Language),
+                new Claim(ClaimType.DisplayName, ClaimType.DisplayName),
+                new Claim(ClaimType.Role, user.RoleName ?? string.Empty),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+            };
 
-    public string GenerateRefreshToken()
-    {
-        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-    }
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddMinutes(_options.TokenExpireMinutes),
+                Issuer = _options.Issuer,
+                Audience = _options.Audience,
+                SigningCredentials = credentials
+            };
 
-    public ClaimsPrincipal? GetPrincipalFromToken(string token)
-    {
-        try
+            var token = _tokenHandler.CreateToken(tokenDescriptor);
+            return _tokenHandler.WriteToken(token);
+        }
+
+        public string GenerateRefreshToken()
         {
-            var tokenValidationParameters = GetValidationParameters(validateLifetime: false);
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        }
 
-            var principal = _tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+        public ClaimsPrincipal? GetPrincipalFromToken(string token)
+        {
+            try
+            {
+                var tokenValidationParameters = GetValidationParameters(validateLifetime: false);
 
-            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                var principal = _tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+
+                if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                    !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return null;
+                }
+
+                return principal;
+            }
+            catch
             {
                 return null;
             }
+        }
 
-            return principal;
-        }
-        catch
+        public bool ValidateToken(string token)
         {
-            return null;
+            try
+            {
+                _tokenHandler.ValidateToken(token, GetValidationParameters(validateLifetime: true), out _);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
-    }
 
-    public bool ValidateToken(string token)
-    {
-        try
+        private TokenValidationParameters GetValidationParameters(bool validateLifetime)
         {
-            _tokenHandler.ValidateToken(token, GetValidationParameters(validateLifetime: true), out _);
-            return true;
+            return new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = _securityKey,
+                ValidateIssuer = true,
+                ValidIssuer = _options.Issuer,
+                ValidateAudience = true,
+                ValidAudience = _options.Audience,
+                ValidateLifetime = validateLifetime,
+                ClockSkew = TimeSpan.Zero
+            };
         }
-        catch
-        {
-            return false;
-        }
-    }
-
-    private TokenValidationParameters GetValidationParameters(bool validateLifetime)
-    {
-        return new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = _securityKey,
-            ValidateIssuer = true,
-            ValidIssuer = _options.Issuer,
-            ValidateAudience = true,
-            ValidAudience = _options.Audience,
-            ValidateLifetime = validateLifetime,
-            ClockSkew = TimeSpan.Zero
-        };
     }
 }

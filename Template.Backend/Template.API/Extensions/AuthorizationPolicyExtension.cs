@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Template.API.AuthorizationHandler.Permission;
 
 namespace Template.API.Extensions
 {
@@ -7,6 +8,10 @@ namespace Template.API.Extensions
     {
         public static void AddAuthorizationPolicyService(this IServiceCollection services)
         {
+            services.AddSingleton<IAuthorizationPolicyProvider, DynamicPermissionPolicyProvider>();
+
+            services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("RequireAdmin", policy =>

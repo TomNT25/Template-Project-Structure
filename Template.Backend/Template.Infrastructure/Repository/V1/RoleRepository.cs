@@ -14,6 +14,11 @@ namespace Template.Infrastructure.Repository.V1
         {
         }
 
+        public async Task<Role?> GetByIdAsync(string id, CancellationToken cancellationToken = default)
+        {
+            return await _dbSet.FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+        }
+
         public async Task<Role?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
         {
             return await _dbSet.FirstOrDefaultAsync(r => r.Code == code, cancellationToken);

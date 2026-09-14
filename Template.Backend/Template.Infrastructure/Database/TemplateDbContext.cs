@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Template.Domain.Entity;
 using Template.Infrastructure.Database.ModelCreating;
 
@@ -11,7 +11,7 @@ namespace Template.Infrastructure.Database
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
-        //public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<UserPermission> UserPermissions { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<UserToken> UserTokens { get; set; }
@@ -21,7 +21,7 @@ namespace Template.Infrastructure.Database
             UserModelCreating.CreateModel(modelBuilder);
             RoleModelCreating.CreateModel(modelBuilder);
             PermissionModelCreating.CreateModel(modelBuilder);
-            //UserRoleModelCreating.CreateModel(modelBuilder);
+            UserRoleModelCreating.CreateModel(modelBuilder);
             UserPermissionModelCreating.CreateModel(modelBuilder);
             RolePermissionModelCreating.CreateModel(modelBuilder);
             UserTokenModelCreating.CreateModel(modelBuilder);

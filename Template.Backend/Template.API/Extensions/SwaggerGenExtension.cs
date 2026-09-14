@@ -13,7 +13,7 @@ namespace Template.API.Extensions
                 {
                     Title = "Template API",
                     Version = "v1",
-                    Description = "Clean Architecture .NET Web API with JWT Authentication"
+                    Description = "Template .NET Web API"
                 });
 
                 var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

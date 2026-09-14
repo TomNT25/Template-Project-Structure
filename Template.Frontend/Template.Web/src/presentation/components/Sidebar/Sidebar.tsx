@@ -27,13 +27,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
           </NavLink>
         ))}
       </nav>
-
-      <div className="sidebar-footer">
-        <div className="sidebar-badge">
-          <span className="sidebar-status-dot" />
-          <span>Mode: {isMock ? 'Mock Server' : 'Live API'}</span>
-        </div>
-      </div>
     </aside>
   );
 };

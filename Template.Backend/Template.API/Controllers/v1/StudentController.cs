@@ -8,11 +8,13 @@ using Template.Application.Feature.v1.Student.GetAllStudent;
 using Template.Application.Feature.v1.Student.UpdateStudent;
 using Template.Helper.Constant;
 using Template.Helper.Localization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Project_Structure_Template.Controllers.v1
 {
     [ApiController]
     [ApiVersion("1.0")]
+    [Authorize]
     [Route("api/v{version:apiVersion}/students")]
     public class StudentController : ControllerBase
     {
@@ -32,6 +34,7 @@ namespace Project_Structure_Template.Controllers.v1
         /// <response code="200">Get All Student Success</response>
         /// <response code="400">Get All Student Fail</response>
         [HttpGet]
+        [Authorize(Policy = "GetAllStudenT")]
         [ProducesResponseType(typeof(BaseAPIResponse<GetAllStudentResponseDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<BaseAPIResponse<GetAllStudentResponseDTO>>> GetAllStudent([FromQuery] GetAllStudentRequestDTO request)
@@ -48,6 +51,7 @@ namespace Project_Structure_Template.Controllers.v1
         /// <response code="200">Get Student By ID Success</response>
         /// <response code="400">Get Student By ID Fail</response>
         [HttpGet("id")]
+        [Authorize(Policy = "GetStudentByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -65,6 +69,7 @@ namespace Project_Structure_Template.Controllers.v1
         /// <response code="200">Add Student success</response>
         /// <response code="400">Add Student fail</response>
         [HttpPost]
+        [Authorize(Policy = "AddStudent")]
         [ProducesResponseType(typeof(BaseAPIResponse<AddStudentResponseDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -82,6 +87,7 @@ namespace Project_Structure_Template.Controllers.v1
         /// <response code="200">Update Student success</response>
         /// <response code="400">Update Student fail</response>
         [HttpPost("update")]
+        [Authorize(Policy = "UpdateStudent")]
         [ProducesResponseType(typeof(BaseAPIResponse<UpdateStudentResponseDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -99,6 +105,7 @@ namespace Project_Structure_Template.Controllers.v1
         /// <response code="200">Delete Student success</response>
         /// <response code="400">Delete Student fail</response>
         [HttpPost("delete")]
+        [Authorize(Policy = "DeleteStudent")]
         [ProducesResponseType(typeof(BaseAPIResponse<DeleteStudentResponseDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

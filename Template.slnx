@@ -19,4 +19,5 @@
       <Deploy />
     </Project>
   </Folder>
+  <Project Path="Template.Worker/Template.Worker.csproj" Id="fba564d2-961f-42f5-8b3f-5948eb874227" />
 </Solution>
