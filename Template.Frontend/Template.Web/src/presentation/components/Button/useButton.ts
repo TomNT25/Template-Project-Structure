@@ -5,7 +5,7 @@ export interface UseButtonProps {
   disabled?: boolean;
   isLoading?: boolean;
   type?: 'button' | 'submit' | 'reset';
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'success' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
 }

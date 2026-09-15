@@ -7,6 +7,7 @@ import { Toast, ProtectedRoute, GuestRoute } from '@presentation/components';
 import { MainLayout } from '@presentation/layouts/MainLayout';
 import { DashboardPage } from '@presentation/pages/Dashboard';
 import { StudentsPage } from '@presentation/pages/Students';
+import { ComponentsShowcase } from '@presentation/pages/Components';
 import { LoginPage } from '@presentation/pages/Auth/LoginPage';
 import { RegisterPage } from '@presentation/pages/Auth/RegisterPage';
 import { VerifyOtpPage } from '@presentation/pages/Auth/VerifyOtpPage';
@@ -55,6 +56,7 @@ export const AppContent: React.FC = () => {
       >
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/students" element={<StudentsPage />} />
+        <Route path="/components" element={<ComponentsShowcase />} />
       </Route>
 
       {/* Catch-all 404 Route */}

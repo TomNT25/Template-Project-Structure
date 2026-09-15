@@ -2,6 +2,7 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Template.API.Controllers;
 using Template.Application.Feature.v1.Auth.ForgotPassword;
 using Template.Application.Feature.v1.Auth.Login;
 using Template.Application.Feature.v1.Auth.Logout;
@@ -15,19 +16,11 @@ using Template.Helper.Localization;
 
 namespace Project_Structure_Template.Controllers.v1
 {
-    [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/auth")]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseController
     {
-        private readonly IDispatcher _dispatcher;
-        private readonly IJsonStringLocalizer _localizer;
-
-        public AuthController(IDispatcher dispatcher, IJsonStringLocalizer localizer)
-        {
-            _dispatcher = dispatcher;
-            _localizer = localizer;
-        }
+        public AuthController(IDispatcher dispatcher, IJsonStringLocalizer localizer) : base(dispatcher, localizer) { }
 
         /// <summary>
         /// Login
@@ -40,7 +33,7 @@ namespace Project_Structure_Template.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<LoginResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Auth.LoginSuccess);
-            return Ok(BaseAPIResponse<LoginResponseDTO>.Success(result, message));
+            return OkResponse<LoginResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -53,7 +46,7 @@ namespace Project_Structure_Template.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<RegisterResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Auth.RegisterSuccess);
-            return Ok(BaseAPIResponse<RegisterResponseDTO>.Success(result, message));
+            return OkResponse<RegisterResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -68,7 +61,7 @@ namespace Project_Structure_Template.Controllers.v1
             var req = request ?? new LogoutRequestDTO();
             var result = await _dispatcher.DispatchAsync<LogoutResponseDTO>(req);
             var message = _localizer.GetString(MessageConstants.Auth.LogoutSuccess);
-            return Ok(BaseAPIResponse<LogoutResponseDTO>.Success(result, message));
+            return OkResponse<LogoutResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -81,7 +74,7 @@ namespace Project_Structure_Template.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<SendOtpResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Auth.SendOtpSuccess);
-            return Ok(BaseAPIResponse<SendOtpResponseDTO>.Success(result, message));
+            return OkResponse<SendOtpResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -95,7 +88,7 @@ namespace Project_Structure_Template.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<VerifyOtpResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Auth.VerifyOtpSuccess);
-            return Ok(BaseAPIResponse<VerifyOtpResponseDTO>.Success(result, message));
+            return OkResponse<VerifyOtpResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -108,7 +101,7 @@ namespace Project_Structure_Template.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<ForgotPasswordResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Auth.ForgotPasswordSuccess);
-            return Ok(BaseAPIResponse<ForgotPasswordResponseDTO>.Success(result, message));
+            return OkResponse<ForgotPasswordResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -121,7 +114,7 @@ namespace Project_Structure_Template.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<ResetPasswordResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Auth.ResetPasswordSuccess);
-            return Ok(BaseAPIResponse<ResetPasswordResponseDTO>.Success(result, message));
+            return OkResponse<ResetPasswordResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -142,18 +135,18 @@ namespace Project_Structure_Template.Controllers.v1
             if (string.IsNullOrEmpty(userId))
             {
                 var errMessage = _localizer.GetString(MessageConstants.Auth.IdentityNotFound);
-                return Unauthorized(BaseAPIResponse<GetMeResponseDTO>.Failure(errMessage, StatusCodes.Status401Unauthorized));
+                return UnauthorizedResponse<GetMeResponseDTO>(errMessage);
             }
 
             var result = await _dispatcher.DispatchAsync<GetMeResponseDTO?>(new GetMeQuery(userId));
             if (result == null)
             {
                 var notFoundMessage = _localizer.GetString(MessageConstants.Auth.UserNotFound);
-                return NotFound(BaseAPIResponse<GetMeResponseDTO>.Failure(notFoundMessage, StatusCodes.Status404NotFound));
+                return NotFoundResponse<GetMeResponseDTO>(notFoundMessage);
             }
 
             var successMessage = _localizer.GetString(MessageConstants.Auth.GetMeSuccess);
-            return Ok(BaseAPIResponse<GetMeResponseDTO>.Success(result, successMessage));
+            return OkResponse<GetMeResponseDTO>(result, successMessage);
         }
     }
 }

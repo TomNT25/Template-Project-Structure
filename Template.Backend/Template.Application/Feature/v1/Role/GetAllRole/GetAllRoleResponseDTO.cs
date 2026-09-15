@@ -1,9 +1,9 @@
+using Template.Domain.DTO;
 using Template.Domain.DTO.Entity;
 
 namespace Template.Application.Feature.v1.Role.GetAllRole
 {
-    public class GetAllRoleResponseDTO
+    public class GetAllRoleResponseDTO : PageNumberPaginationResponse<RoleDTO>
     {
-        public List<RoleDTO> Roles { get; set; } = new();
     }
 }

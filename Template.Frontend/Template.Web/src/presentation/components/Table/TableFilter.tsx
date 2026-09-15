@@ -1,14 +1,32 @@
 import React from 'react';
 
-export const TableFilter: React.FC = () => {
+export interface TableFilterProps {
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  options?: { label: string; value: string }[];
+  className?: string;
+}
 
-    return (
-        <div className="table-filter">
-            <select className="border rounded px-3 py-1">
-                <option value="">All</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-            </select>
-        </div>
-    );
+export const TableFilter: React.FC<TableFilterProps> = ({
+  value,
+  onChange,
+  options = [
+    { label: 'All Statuses', value: '' },
+    { label: 'Active', value: 'Active' },
+    { label: 'Inactive', value: 'Inactive' },
+    { label: 'Graduated', value: 'Graduated' },
+  ],
+  className = '',
+}) => {
+  return (
+    <div className={`table-filter ${className}`.trim()}>
+      <select value={value} onChange={onChange} className="table-filter-select">
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
 };

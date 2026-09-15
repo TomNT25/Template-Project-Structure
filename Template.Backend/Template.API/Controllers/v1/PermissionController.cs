@@ -15,20 +15,12 @@ using Template.Helper.Localization;
 
 namespace Template.API.Controllers.v1
 {
-    [ApiController]
     [ApiVersion("1.0")]
     [Authorize]
     [Route("api/v{version:apiVersion}/permissions")]
-    public class PermissionController : ControllerBase
+    public class PermissionController : BaseController
     {
-        private readonly IDispatcher _dispatcher;
-        private readonly IJsonStringLocalizer _localizer;
-
-        public PermissionController(IDispatcher dispatcher, IJsonStringLocalizer localizer)
-        {
-            _dispatcher = dispatcher;
-            _localizer = localizer;
-        }
+        public PermissionController(IDispatcher dispatcher, IJsonStringLocalizer localizer) : base(dispatcher, localizer) { }
 
         /// <summary>
         /// Get all permissions
@@ -39,7 +31,7 @@ namespace Template.API.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<GetAllPermissionResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Permission.GetAllSuccess);
-            return Ok(BaseAPIResponse<GetAllPermissionResponseDTO>.Success(result, message));
+            return OkResponse<GetAllPermissionResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -52,13 +44,15 @@ namespace Template.API.Controllers.v1
         {
             var request = new GetPermissionByIdRequestDTO { Id = id };
             var result = await _dispatcher.DispatchAsync<GetPermissionByIdResponseDTO>(request);
+            var message = _localizer.GetString(MessageConstants.Permission.NotFound);
+
             if (result.Permission == null)
             {
-                return NotFound(BaseAPIResponse<GetPermissionByIdResponseDTO>.Failure(_localizer.GetString(MessageConstants.Permission.NotFound), statusCode: 404));
+                return NotFoundResponse<GetPermissionByIdResponseDTO>(message);
             }
 
-            var message = _localizer.GetString(MessageConstants.Permission.GetByIdSuccess);
-            return Ok(BaseAPIResponse<GetPermissionByIdResponseDTO>.Success(result, message));
+            message = _localizer.GetString(MessageConstants.Permission.GetByIdSuccess);
+            return OkResponse<GetPermissionByIdResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -71,7 +65,7 @@ namespace Template.API.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<CreatePermissionResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Permission.CreateSuccess);
-            return StatusCode(StatusCodes.Status201Created, BaseAPIResponse<CreatePermissionResponseDTO>.Success(result, message));
+            return CreatedResponse<CreatePermissionResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -86,7 +80,7 @@ namespace Template.API.Controllers.v1
             request.Id = id;
             var result = await _dispatcher.DispatchAsync<UpdatePermissionResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Permission.UpdateSuccess);
-            return Ok(BaseAPIResponse<UpdatePermissionResponseDTO>.Success(result, message));
+            return OkResponse<UpdatePermissionResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -100,7 +94,7 @@ namespace Template.API.Controllers.v1
             var request = new DeletePermissionRequestDTO { Id = id };
             var result = await _dispatcher.DispatchAsync<DeletePermissionResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Permission.DeleteSuccess);
-            return Ok(BaseAPIResponse<DeletePermissionResponseDTO>.Success(result, message));
+            return OkResponse<DeletePermissionResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -113,7 +107,7 @@ namespace Template.API.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<GrantUserPermissionResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Permission.GrantUserSuccess);
-            return Ok(BaseAPIResponse<GrantUserPermissionResponseDTO>.Success(result, message));
+            return OkResponse<GrantUserPermissionResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -126,7 +120,7 @@ namespace Template.API.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<RevokeUserPermissionResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Permission.RevokeUserSuccess);
-            return Ok(BaseAPIResponse<RevokeUserPermissionResponseDTO>.Success(result, message));
+            return OkResponse<RevokeUserPermissionResponseDTO>(result, message);
         }
     }
 }

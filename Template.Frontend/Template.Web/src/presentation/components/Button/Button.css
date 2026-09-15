@@ -63,6 +63,27 @@
   box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
 }
 
+.btn-success {
+  background: var(--color-success);
+  color: #ffffff;
+}
+
+.btn-success:hover:not(:disabled) {
+  background: #059669;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-main);
+  border: 1px solid transparent;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--bg-input-focus);
+  color: var(--color-primary);
+}
+
 .btn-sm {
   padding: 6px 12px;
   font-size: 0.85rem;

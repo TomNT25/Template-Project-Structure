@@ -1,10 +1,9 @@
-using Microsoft.EntityFrameworkCore;
+using MapsterMapper;
 using System.Collections.Concurrent;
 using Template.Domain.Contract.Repository;
 using Template.Domain.Contract.UnitOfWork;
 using Template.Infrastructure.Database;
 using Template.Infrastructure.Repository.Base;
-using MapsterMapper;
 
 namespace Template.Infrastructure.UnitOfWork
 {

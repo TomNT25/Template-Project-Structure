@@ -1,18 +1,26 @@
 import React from 'react';
 import { useTableContext } from './useTableContext';
 
-export const TableSearch: React.FC = () => {
-    const { searchQuery, setSearchQuery } = useTableContext();
+export interface TableSearchProps {
+  placeholder?: string;
+  className?: string;
+}
 
-    return (
-        <div className="table-search">
-            <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="border rounded px-3 py-1"
-            />
-        </div>
-    );
+export const TableSearch: React.FC<TableSearchProps> = ({
+  placeholder = 'Search...',
+  className = '',
+}) => {
+  const { searchQuery, setSearchQuery } = useTableContext();
+
+  return (
+    <div className={`table-search ${className}`.trim()}>
+      <input
+        type="text"
+        placeholder={placeholder}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="table-search-input"
+      />
+    </div>
+  );
 };

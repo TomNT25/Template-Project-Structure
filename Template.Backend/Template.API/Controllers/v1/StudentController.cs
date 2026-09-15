@@ -9,23 +9,16 @@ using Template.Application.Feature.v1.Student.UpdateStudent;
 using Template.Helper.Constant;
 using Template.Helper.Localization;
 using Microsoft.AspNetCore.Authorization;
+using Template.API.Controllers;
 
 namespace Project_Structure_Template.Controllers.v1
 {
-    [ApiController]
     [ApiVersion("1.0")]
     [Authorize]
     [Route("api/v{version:apiVersion}/students")]
-    public class StudentController : ControllerBase
+    public class StudentController : BaseController
     {
-        private readonly IDispatcher _dispatcher;
-        private readonly IJsonStringLocalizer _localizer;
-
-        public StudentController(IDispatcher dispatcher, IJsonStringLocalizer localizer)
-        {
-            _dispatcher = dispatcher;
-            _localizer = localizer;
-        }
+        public StudentController(IDispatcher dispatcher, IJsonStringLocalizer localizer) : base(dispatcher, localizer) { }
 
         /// <summary>
         /// Get All Student
@@ -41,7 +34,7 @@ namespace Project_Structure_Template.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<GetAllStudentResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Student.GetAllSuccess);
-            return Ok(BaseAPIResponse<GetAllStudentResponseDTO>.Success(result, message));
+            return OkResponse<GetAllStudentResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -59,7 +52,7 @@ namespace Project_Structure_Template.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<GetAllStudentResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Student.GetByIdSuccess);
-            return Ok(BaseAPIResponse<GetAllStudentResponseDTO>.Success(result, message));
+            return OkResponse<GetAllStudentResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -77,7 +70,7 @@ namespace Project_Structure_Template.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<AddStudentResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Student.AddSuccess);
-            return Ok(BaseAPIResponse<AddStudentResponseDTO>.Success(result, message));
+            return CreatedResponse<AddStudentResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -95,7 +88,7 @@ namespace Project_Structure_Template.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<UpdateStudentResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Student.UpdateSuccess);
-            return Ok(BaseAPIResponse<UpdateStudentResponseDTO>.Success(result, message));
+            return OkResponse<UpdateStudentResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -113,7 +106,7 @@ namespace Project_Structure_Template.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<DeleteStudentResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Student.DeleteSuccess);
-            return Ok(BaseAPIResponse<DeleteStudentResponseDTO>.Success(result, message));
+            return OkResponse<DeleteStudentResponseDTO>(result, message);
         }
     }
 }

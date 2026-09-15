@@ -9,5 +9,6 @@ export * from './Card';
 export * from './Badge';
 export * from './Spinner';
 export * from './Select';
+export * from './Pagination';
 export * from './ProtectedRoute';
 export * from './GuestRoute';

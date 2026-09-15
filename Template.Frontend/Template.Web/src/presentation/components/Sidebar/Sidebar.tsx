@@ -9,7 +9,6 @@ export interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
   const { navItems } = useSidebar();
-  const isMock = import.meta.env.VITE_USE_MOCK_DATA === 'true';
 
   return (
     <aside className={`sidebar ${className}`.trim()}>

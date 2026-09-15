@@ -3,6 +3,9 @@ import './Card.css';
 
 export interface CardProps {
   children: React.ReactNode;
+  title?: React.ReactNode;
+  subtitle?: React.ReactNode;
+  action?: React.ReactNode;
   hoverable?: boolean;
   className?: string;
   style?: React.CSSProperties;
@@ -52,12 +55,13 @@ export const Card: React.FC<CardProps> & {
   Header: typeof CardHeader;
   Body: typeof CardBody;
   Footer: typeof CardFooter;
-} = ({ children, hoverable = false, className = '', style }) => {
+} = ({ children, title, subtitle, action, hoverable = false, className = '', style }) => {
   return (
     <div
       className={`card ${hoverable ? 'card-hoverable' : ''} ${className}`.trim()}
       style={style}
     >
+      {title && <CardHeader title={title} subtitle={subtitle} action={action} />}
       {children}
     </div>
   );

@@ -13,6 +13,7 @@ export function useSidebar() {
   const navItems: NavItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊', path: '/dashboard' },
     { id: 'students', label: 'Student Directory', icon: '🎓', path: '/students' },
+    { id: 'components', label: 'UI Components', icon: '🧩', path: '/components' },
   ];
 
   const currentPath = location.pathname;

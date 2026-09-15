@@ -17,20 +17,12 @@ using Template.Helper.Localization;
 
 namespace Template.API.Controllers.v1
 {
-    [ApiController]
     [ApiVersion("1.0")]
     [Authorize]
     [Route("api/v{version:apiVersion}/roles")]
-    public class RoleController : ControllerBase
+    public class RoleController : BaseController
     {
-        private readonly IDispatcher _dispatcher;
-        private readonly IJsonStringLocalizer _localizer;
-
-        public RoleController(IDispatcher dispatcher, IJsonStringLocalizer localizer)
-        {
-            _dispatcher = dispatcher;
-            _localizer = localizer;
-        }
+        public RoleController(IDispatcher dispatcher, IJsonStringLocalizer localizer) : base(dispatcher, localizer) { }
 
         /// <summary>
         /// Get all roles
@@ -41,7 +33,7 @@ namespace Template.API.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<GetAllRoleResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Role.GetAllSuccess);
-            return Ok(BaseAPIResponse<GetAllRoleResponseDTO>.Success(result, message));
+            return OkResponse<GetAllRoleResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -54,13 +46,14 @@ namespace Template.API.Controllers.v1
         {
             var request = new GetRoleByIdRequestDTO { Id = id };
             var result = await _dispatcher.DispatchAsync<GetRoleByIdResponseDTO>(request);
+            var message = _localizer.GetString(MessageConstants.Role.NotFound);
             if (result.Role == null)
             {
-                return NotFound(BaseAPIResponse<GetRoleByIdResponseDTO>.Failure(_localizer.GetString(MessageConstants.Role.NotFound), statusCode: 404));
+                return NotFoundResponse<GetRoleByIdResponseDTO>(message);
             }
 
-            var message = _localizer.GetString(MessageConstants.Role.GetByIdSuccess);
-            return Ok(BaseAPIResponse<GetRoleByIdResponseDTO>.Success(result, message));
+            message = _localizer.GetString(MessageConstants.Role.GetByIdSuccess);
+            return OkResponse<GetRoleByIdResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -73,7 +66,7 @@ namespace Template.API.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<CreateRoleResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Role.CreateSuccess);
-            return StatusCode(StatusCodes.Status201Created, BaseAPIResponse<CreateRoleResponseDTO>.Success(result, message));
+            return CreatedResponse<CreateRoleResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -88,7 +81,7 @@ namespace Template.API.Controllers.v1
             request.Id = id;
             var result = await _dispatcher.DispatchAsync<UpdateRoleResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Role.UpdateSuccess);
-            return Ok(BaseAPIResponse<UpdateRoleResponseDTO>.Success(result, message));
+            return OkResponse<UpdateRoleResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -102,7 +95,7 @@ namespace Template.API.Controllers.v1
             var request = new DeleteRoleRequestDTO { Id = id };
             var result = await _dispatcher.DispatchAsync<DeleteRoleResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Role.DeleteSuccess);
-            return Ok(BaseAPIResponse<DeleteRoleResponseDTO>.Success(result, message));
+            return OkResponse<DeleteRoleResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -115,7 +108,7 @@ namespace Template.API.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<GrantRolePermissionResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Role.GrantPermissionSuccess);
-            return Ok(BaseAPIResponse<GrantRolePermissionResponseDTO>.Success(result, message));
+            return OkResponse<GrantRolePermissionResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -128,7 +121,7 @@ namespace Template.API.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<RevokeRolePermissionResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Role.RevokePermissionSuccess);
-            return Ok(BaseAPIResponse<RevokeRolePermissionResponseDTO>.Success(result, message));
+            return OkResponse<RevokeRolePermissionResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -141,7 +134,7 @@ namespace Template.API.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<GrantUserRoleResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Role.GrantUserSuccess);
-            return Ok(BaseAPIResponse<GrantUserRoleResponseDTO>.Success(result, message));
+            return OkResponse<GrantUserRoleResponseDTO>(result, message);
         }
 
         /// <summary>
@@ -154,7 +147,7 @@ namespace Template.API.Controllers.v1
         {
             var result = await _dispatcher.DispatchAsync<RevokeUserRoleResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Role.RevokeUserSuccess);
-            return Ok(BaseAPIResponse<RevokeUserRoleResponseDTO>.Success(result, message));
+            return OkResponse<RevokeUserRoleResponseDTO>(result, message);
         }
     }
 }

@@ -40,9 +40,12 @@ public static class InfrastructureDependencyInjection
                 options.Configuration = redisConn;
                 options.InstanceName = configuration[CacheConstants.RedisInstanceNamePath] ?? CacheConstants.DefaultInstanceName;
             });
+            services.AddScoped<ICacheService, RedisCacheService>();
         }
-
-        services.AddScoped<ICacheService, RedisCacheService>();
+        else
+        {
+            services.AddScoped<ICacheService, MemoryCacheService>();
+        }
 
         services.AddDatabaseConfiguration(configuration);
 

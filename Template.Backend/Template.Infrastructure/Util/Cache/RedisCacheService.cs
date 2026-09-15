@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using Template.Domain.Contract.Cache;
@@ -9,7 +8,6 @@ namespace Template.Infrastructure.Util.Cache
     public class RedisCacheService : ICacheService
     {
         private readonly IDistributedCache? _distributedCache;
-        private readonly IMemoryCache _memoryCache;
         private readonly ILogger<RedisCacheService> _logger;
         private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
         {
@@ -18,11 +16,9 @@ namespace Template.Infrastructure.Util.Cache
         };
 
         public RedisCacheService(
-            IMemoryCache memoryCache,
             ILogger<RedisCacheService> logger,
             IDistributedCache? distributedCache = null)
         {
-            _memoryCache = memoryCache;
             _logger = logger;
             _distributedCache = distributedCache;
         }
@@ -48,11 +44,6 @@ namespace Template.Infrastructure.Util.Cache
                 {
                     _logger.LogWarning(ex, "Redis GET failed for key '{CacheKey}'. Falling back to IMemoryCache.", cacheKey);
                 }
-            }
-
-            if (_memoryCache.TryGetValue(cacheKey, out T? value))
-            {
-                return value;
             }
 
             return default;
@@ -82,8 +73,6 @@ namespace Template.Infrastructure.Util.Cache
                     _logger.LogWarning(ex, "Redis SET failed for key '{CacheKey}'. Falling back to IMemoryCache.", cacheKey);
                 }
             }
-
-            _memoryCache.Set(cacheKey, value, expiry);
         }
 
         public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
@@ -104,8 +93,6 @@ namespace Template.Infrastructure.Util.Cache
                     _logger.LogWarning(ex, "Redis REMOVE failed for key '{CacheKey}'. Falling back to IMemoryCache.", cacheKey);
                 }
             }
-
-            _memoryCache.Remove(cacheKey);
         }
 
         public async Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default)
@@ -138,11 +125,6 @@ namespace Template.Infrastructure.Util.Cache
                 }
             }
 
-            if (_memoryCache.TryGetValue(cacheKey, out string? value))
-            {
-                return value;
-            }
-
             return null;
         }
 
@@ -169,8 +151,6 @@ namespace Template.Infrastructure.Util.Cache
                     _logger.LogWarning(ex, "Redis SetString failed for key '{CacheKey}'. Falling back to IMemoryCache.", cacheKey);
                 }
             }
-
-            _memoryCache.Set(cacheKey, value, expiry);
         }
 
         private static string FormatKey(string key) => key.Trim();
