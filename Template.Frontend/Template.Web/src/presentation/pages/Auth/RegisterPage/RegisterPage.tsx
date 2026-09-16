@@ -4,7 +4,7 @@ import { Input, Button } from '@presentation/components';
 import { useRegisterPage, type UseRegisterPageProps } from './useRegisterPage';
 import './RegisterPage.css';
 
-export interface RegisterPageProps extends UseRegisterPageProps {}
+export type RegisterPageProps = UseRegisterPageProps;
 
 export const RegisterPage: React.FC<RegisterPageProps> = (props) => {
   const {

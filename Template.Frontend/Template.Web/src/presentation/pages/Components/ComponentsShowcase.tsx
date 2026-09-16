@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import {
   Button,
@@ -44,19 +45,25 @@ export const ComponentsShowcase: React.FC = () => {
   ];
 
   const sampleTableColumns = [
-    { key: 'code', label: 'Student Code' },
-    { key: 'name', label: 'Full Name' },
-    { key: 'department', label: 'Department' },
     {
-      key: 'status',
-      label: 'Status',
-      render: (row: any) => {
+      accessorKey: '_index',
+      header: '#',
+      cell: (_: any, idx?: number) => <strong>{(idx ?? 0) + 1}</strong>,
+    },
+    { accessorKey: 'code', header: 'Student Code' },
+    { accessorKey: 'name', header: 'Full Name' },
+    { accessorKey: 'department', header: 'Department' },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: (row: any) => {
+        const statusStr = String(row.status || '');
         const variantMap: Record<string, 'active' | 'inactive' | 'pending'> = {
           Active: 'active',
           Inactive: 'inactive',
           Graduated: 'pending',
         };
-        return <Badge variant={variantMap[row.status] || 'default'}>{row.status}</Badge>;
+        return <Badge variant={variantMap[statusStr] || 'default'}>{statusStr}</Badge>;
       },
     },
   ];

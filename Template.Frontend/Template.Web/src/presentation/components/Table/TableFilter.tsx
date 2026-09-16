@@ -19,7 +19,7 @@ export const TableFilter: React.FC<TableFilterProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`table-filter ${className}`.trim()}>
+    <div className={`table-filter-wrapper ${className}`.trim()}>
       <select value={value} onChange={onChange} className="table-filter-select">
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
@@ -27,6 +27,18 @@ export const TableFilter: React.FC<TableFilterProps> = ({
           </option>
         ))}
       </select>
+      <svg
+        className="table-filter-arrow"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
     </div>
   );
 };
+

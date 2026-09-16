@@ -4,7 +4,7 @@ import { Input, Button } from '@presentation/components';
 import { useLoginPage, type UseLoginPageProps } from './useLoginPage';
 import './LoginPage.css';
 
-export interface LoginPageProps extends UseLoginPageProps {}
+export type LoginPageProps = UseLoginPageProps;
 
 export const LoginPage: React.FC<LoginPageProps> = (props) => {
   const {

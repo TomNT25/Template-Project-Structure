@@ -24,12 +24,12 @@ public class Program
 
         var app = builder.Build();
 
-        app.ConfigureMiddlewarePipeline(builder.Environment);
-
         if (app.Environment.IsDevelopment())
         {
             app.UseDevelopmentSwagger();
         }
+
+        app.ConfigureMiddlewarePipeline(builder.Environment);        
 
         app.Run();
     }

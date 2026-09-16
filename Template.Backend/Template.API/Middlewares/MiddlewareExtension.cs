@@ -8,10 +8,6 @@ namespace Template.API.Middlewares
         public static void ConfigureMiddlewarePipeline(this WebApplication app, IWebHostEnvironment env)
         {
             // Diagnostics & Error Handling
-            if (env.IsDevelopment())
-            {
-                app.UseMiddleware<DebugContextMiddleware>();
-            }
             app.UseMiddleware<RequestLoggingMiddleware>();
             app.UseExceptionHandler();
             app.UseRequestLocalization();

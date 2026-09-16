@@ -33,7 +33,7 @@ export function useLoginPage(props: UseLoginPageProps = {}) {
       if (onSuccess) {
         onSuccess();
       } else {
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
       }
     } catch {
       // Handled in AuthContext toast

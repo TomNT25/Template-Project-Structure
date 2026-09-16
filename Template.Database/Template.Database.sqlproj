@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -60,6 +60,7 @@
     <Folder Include="dbo\Tables\" />
     <Folder Include="dbo\Views\" />
     <Folder Include="dbo\Functions\" />
+    <Folder Include="dbo\SeedData\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Students.sql" />
@@ -71,5 +72,17 @@
     <Build Include="dbo\Tables\permissions.sql" />
     <Build Include="dbo\Views\vw_GenerateGuid.sql" />
     <Build Include="dbo\Functions\fn_GenerateUUIDv7.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dbo\SeedData\01_SeedRoles.sql" />
+    <None Include="dbo\SeedData\02_SeedUsers.sql" />
+    <None Include="dbo\SeedData\03_SeedPermissions.sql" />
+    <None Include="dbo\SeedData\04_SeedRolePermissions.sql" />
+    <None Include="dbo\SeedData\05_SeedUserPermissions.sql" />
+    <None Include="dbo\SeedData\06_SeedStudents.sql" />
+    <None Include="dbo\SeedData\07_SeedUserTokens.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="dbo\Script.PostDeployment.sql" />
   </ItemGroup>
 </Project>

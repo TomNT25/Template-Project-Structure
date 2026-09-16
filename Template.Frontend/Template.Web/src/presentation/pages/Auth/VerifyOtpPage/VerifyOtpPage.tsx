@@ -4,7 +4,7 @@ import { Input, Button } from '@presentation/components';
 import { useVerifyOtpPage, type UseVerifyOtpPageProps } from './useVerifyOtpPage';
 import './VerifyOtpPage.css';
 
-export interface VerifyOtpPageProps extends UseVerifyOtpPageProps {}
+export type VerifyOtpPageProps = UseVerifyOtpPageProps;
 
 export const VerifyOtpPage: React.FC<VerifyOtpPageProps> = (props) => {
   const {

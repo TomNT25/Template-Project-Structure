@@ -1,12 +1,13 @@
 /* Container */
 .table-container {
-  background-color: var(--bg-card);
+  background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   width: 100%;
   border: 1px solid var(--border-color);
   overflow: hidden;
-  transition: background-color var(--transition-normal), border-color var(--transition-normal);
+  transition: all var(--transition-normal);
+  backdrop-filter: var(--backdrop-blur);
 }
 
 /* Scroll Wrapper */
@@ -20,7 +21,7 @@
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 0.875rem;
+  font-size: 0.88rem;
 }
 
 /* Header */
@@ -28,21 +29,78 @@
   background-color: var(--bg-input);
   color: var(--text-muted);
   text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
   font-weight: 700;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .table-th {
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border-color);
+  padding: 13px 18px;
   user-select: none;
+  white-space: nowrap;
+}
+
+.table-th-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.table-th-sortable {
+  cursor: pointer;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.table-th-sortable:hover {
+  color: var(--text-main);
+  background-color: var(--bg-hover-subtle);
+}
+
+.table-sort-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-subtle);
+  transition: all var(--transition-fast);
+}
+
+.table-sort-active {
+  color: var(--color-primary-light);
+}
+
+/* Alignment utilities */
+.table-th-align-left,
+.table-td-align-left {
+  text-align: left;
+}
+
+.table-th-align-center,
+.table-td-align-center {
+  text-align: center;
+}
+
+.table-th-align-center .table-th-content {
+  justify-content: center;
+}
+
+.table-th-align-right,
+.table-td-align-right {
+  text-align: right;
+}
+
+.table-th-align-right .table-th-content {
+  justify-content: flex-end;
 }
 
 /* Body */
 .table-tr {
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-subtle);
   transition: background-color var(--transition-fast);
+}
+
+.table-tr:nth-child(even) {
+  background-color: var(--bg-table-stripe);
 }
 
 .table-tr:last-child {
@@ -50,28 +108,69 @@
 }
 
 .table-tr:hover {
-  background-color: var(--bg-card-hover);
+  background-color: var(--bg-card-hover) !important;
 }
 
 .table-td {
-  padding: 14px 18px;
+  padding: 13px 18px;
   color: var(--text-main);
   vertical-align: middle;
+  font-size: 0.88rem;
 }
 
+/* Empty State */
 .table-td-empty {
+  padding: 56px 24px !important;
   text-align: center;
-  padding: 48px 24px;
-  color: var(--text-muted);
-  font-size: 0.95rem;
 }
+
+.table-empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.table-empty-icon-wrapper {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.table-empty-icon-wrapper svg {
+  width: 26px;
+  height: 26px;
+}
+
+.table-empty-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.table-empty-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
 
 /* Toolbar */
 .table-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
+  padding: 18px 22px;
   border-bottom: 1px solid var(--border-color);
   gap: 16px;
   flex-wrap: wrap;
@@ -79,10 +178,11 @@
 }
 
 .table-toolbar-title {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-main);
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .table-toolbar-actions {
@@ -92,8 +192,28 @@
   flex-wrap: wrap;
 }
 
+/* Search Wrapper & Input */
+.table-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 260px;
+  flex: 1;
+  max-width: 340px;
+}
+
+.table-search-icon {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
 .table-search-input {
-  padding: 8px 14px;
+  width: 100%;
+  padding: 9px 36px 9px 38px;
   background-color: var(--bg-input);
   color: var(--text-main);
   border: 1px solid var(--border-color);
@@ -101,29 +221,73 @@
   outline: none;
   font-size: 0.875rem;
   transition: all var(--transition-fast);
-  min-width: 240px;
+}
+
+.table-search-input::placeholder {
+  color: var(--text-subtle);
 }
 
 .table-search-input:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
   background-color: var(--bg-input-focus);
 }
 
-/* Filter Select */
+.table-search-clear {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  transition: color var(--transition-fast);
+}
+
+.table-search-clear:hover {
+  color: var(--text-main);
+}
+
+/* Filter Wrapper & Select */
+.table-filter-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .table-filter-select {
-  padding: 8px 14px;
+  padding: 9px 36px 9px 14px;
   background-color: var(--bg-input);
   color: var(--text-main);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   outline: none;
   font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.table-filter-select option {
+  background-color: var(--bg-card);
+  color: var(--text-main);
 }
 
 .table-filter-select:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 2px var(--color-primary-alpha);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha);
 }
+
+.table-filter-arrow {
+  position: absolute;
+  right: 12px;
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+

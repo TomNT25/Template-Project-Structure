@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type {
   User,
@@ -11,6 +12,8 @@ import { tokenStorage } from '@infrastructure/storage/tokenStorage';
 import { useToast } from './ToastContext';
 
 interface AuthContextType {
+  token: string | null;
+  setToken: (token: string | null) => void;
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -24,13 +27,26 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [token, setToken] = useState<string | null>(() => tokenStorage.getToken());
   const [user, setUser] = useState<User | null>(() => tokenStorage.getUser<User>());
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { showToast } = useToast();
 
+  const handleUnauthorized = useCallback(() => {
+    tokenStorage.clearAll();
+    setToken(null);
+    setUser(null);
+    showToast('warning', 'Session Expired', 'Your session has expired. Please sign in again.');
+  }, [showToast]);
+
+  useEffect(() => {
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
+  }, [handleUnauthorized]);
+
   const initAuth = useCallback(async () => {
-    const token = tokenStorage.getToken();
-    if (!token) {
+    const existingToken = tokenStorage.getToken();
+    if (!existingToken) {
       setIsLoading(false);
       return;
     }
@@ -39,11 +55,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const meResponse = await authApi.getMe();
       if (meResponse?.user) {
         setUser(meResponse.user);
+        setToken(existingToken);
         tokenStorage.setUser(meResponse.user);
       }
     } catch {
       // Token expired or invalid
       tokenStorage.clearAll();
+      setToken(null);
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -58,11 +76,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const response = await authApi.login(request);
-      tokenStorage.setToken(response.token);
-      tokenStorage.setUser(response.user);
-      response.user.fullName = response.user.firstName?.concat(" " + response.user.lastName);
-      setUser(response.user);
-      showToast('success', 'Welcome back!', `Logged in as ${response.user.fullName}`);
+      const extractedToken = response.token || response.accessToken || '';
+      const fetchedUser = response.user;
+
+      if (!extractedToken) {
+        throw new Error('Authentication succeeded but no access token was returned.');
+      }
+
+      tokenStorage.setToken(extractedToken);
+      setToken(extractedToken);
+
+      if (fetchedUser) {
+        fetchedUser.fullName = fetchedUser.fullName || (fetchedUser.firstName ? `${fetchedUser.firstName} ${fetchedUser.lastName || ''}`.trim() : fetchedUser.username || fetchedUser.email);
+        tokenStorage.setUser(fetchedUser);
+        setUser(fetchedUser);
+      }
+
+      showToast('success', 'Welcome back!', `Logged in as ${fetchedUser?.fullName || fetchedUser?.email || 'User'}`);
     } catch (err: unknown) {
       const message = (err as Error).message || 'Login failed';
       showToast('error', 'Login Failed', message);
@@ -91,8 +121,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const response = await authApi.verifyOtp(request);
-      if (response.token) {
-        tokenStorage.setToken(response.token);
+      const extractedToken = response.token;
+      if (extractedToken) {
+        tokenStorage.setToken(extractedToken);
+        setToken(extractedToken);
       }
       showToast('success', 'Verified', 'Email address verified successfully!');
       return response.isVerified;
@@ -113,6 +145,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Ignore
     } finally {
       tokenStorage.clearAll();
+      setToken(null);
       setUser(null);
       setIsLoading(false);
       showToast('info', 'Logged Out', 'You have been logged out successfully.');
@@ -134,8 +167,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <AuthContext.Provider
       value={{
+        token,
+        setToken,
         user,
-        isAuthenticated: !!user,
+        isAuthenticated: !!token && !!user,
         isLoading,
         login,
         register,

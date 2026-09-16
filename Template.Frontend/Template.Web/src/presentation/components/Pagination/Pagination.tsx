@@ -129,7 +129,7 @@ export const Pagination: React.FC<PaginationProps> = ({
             title="First Page"
             aria-label="First Page"
           >
-            «
+            first
           </button>
           <button
             type="button"
@@ -179,7 +179,7 @@ export const Pagination: React.FC<PaginationProps> = ({
             title="Last Page"
             aria-label="Last Page"
           >
-            »
+            last
           </button>
         </div>
       </div>

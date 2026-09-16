@@ -59,6 +59,7 @@ export async function httpRequest<T>(
 
     if (response.status === 401) {
       tokenStorage.clearAll();
+      window.dispatchEvent(new Event('auth:unauthorized'));
     }
 
     let jsonResult: BaseAPIResponse<T> | null = null;

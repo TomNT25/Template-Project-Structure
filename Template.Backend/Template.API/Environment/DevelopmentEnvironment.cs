@@ -1,9 +1,13 @@
-﻿namespace Template.API.Environment
+﻿using Template.API.Middlewares.CustomMiddlewares;
+
+namespace Template.API.Environment
 {
     public static class DevelopmentEnvironment
     {
         public static void UseDevelopmentSwagger(this WebApplication app)
         {
+            app.UseMiddleware<DebugContextMiddleware>();
+
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {

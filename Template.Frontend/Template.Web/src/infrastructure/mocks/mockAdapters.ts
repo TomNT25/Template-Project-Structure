@@ -16,6 +16,10 @@ import type {
   GetAllStudentResponseDTO,
   AddStudentRequestDTO,
   AddStudentResponseDTO,
+  UpdateStudentRequestDTO,
+  UpdateStudentResponseDTO,
+  DeleteStudentRequestDTO,
+  DeleteStudentResponseDTO,
   Student,
   User,
 } from '@domain/index';
@@ -27,6 +31,7 @@ const initialStudents: Student[] = [
     id: '1',
     studentCode: 'STD-2026-001',
     fullName: 'Alex Johnson',
+    name: 'Alex Johnson',
     email: 'alex.j@university.edu',
     department: 'Computer Science',
     gpa: 3.85,
@@ -37,6 +42,7 @@ const initialStudents: Student[] = [
     id: '2',
     studentCode: 'STD-2026-002',
     fullName: 'Sophia Martinez',
+    name: 'Sophia Martinez',
     email: 'sophia.m@university.edu',
     department: 'Software Engineering',
     gpa: 3.92,
@@ -47,6 +53,7 @@ const initialStudents: Student[] = [
     id: '3',
     studentCode: 'STD-2026-003',
     fullName: 'Liam Nguyen',
+    name: 'Liam Nguyen',
     email: 'liam.n@university.edu',
     department: 'Information Technology',
     gpa: 3.65,
@@ -57,6 +64,7 @@ const initialStudents: Student[] = [
     id: '4',
     studentCode: 'STD-2026-004',
     fullName: 'Emma Davis',
+    name: 'Emma Davis',
     email: 'emma.d@university.edu',
     department: 'Data Science',
     gpa: 3.78,
@@ -67,6 +75,7 @@ const initialStudents: Student[] = [
     id: '5',
     studentCode: 'STD-2026-005',
     fullName: 'David Smith',
+    name: 'David Smith',
     email: 'david.s@university.edu',
     department: 'Cybersecurity',
     gpa: 3.40,
@@ -120,8 +129,10 @@ export const mockAuthService = {
       email: request.email,
     };
 
+    const mockToken = `mock-jwt-token-${Date.now()}`;
     return {
-      token: `mock-jwt-token-${Date.now()}`,
+      token: mockToken,
+      accessToken: mockToken,
       refreshToken: `mock-refresh-token-${Date.now()}`,
       user,
     };
@@ -189,10 +200,10 @@ export const mockStudentService = {
     if (searchTerm) {
       filtered = filtered.filter(
         (s) =>
-          s.fullName.toLowerCase().includes(searchTerm) ||
-          s.studentCode.toLowerCase().includes(searchTerm) ||
-          s.department.toLowerCase().includes(searchTerm) ||
-          s.email.toLowerCase().includes(searchTerm)
+          (s.fullName || s.name || '').toLowerCase().includes(searchTerm) ||
+          (s.studentCode || s.id || '').toLowerCase().includes(searchTerm) ||
+          (s.department || '').toLowerCase().includes(searchTerm) ||
+          (s.email || '').toLowerCase().includes(searchTerm)
       );
     }
 
@@ -204,58 +215,90 @@ export const mockStudentService = {
       filtered = filtered.filter((s) => s.status === request.status);
     }
 
-    // Apply cursor filter if provided (btoa/atob encoded ID or value)
-    if (request?.cursor) {
-      try {
-        const decodedCursor = atob(request.cursor);
-        const cursorIndex = filtered.findIndex((s) => s.id === decodedCursor);
-        if (cursorIndex !== -1) {
-          filtered = filtered.slice(cursorIndex + 1);
-        }
-      } catch {
-        // Fallback if raw cursor passed
-        const cursorIndex = filtered.findIndex((s) => s.id === request.cursor);
-        if (cursorIndex !== -1) {
-          filtered = filtered.slice(cursorIndex + 1);
-        }
-      }
-    }
+    const pageSize = request?.pageSize ?? 10;
+    const pageNumber = request?.pageNumber ?? 1;
+    const totalRecords = filtered.length;
+    const totalPages = Math.ceil(totalRecords / pageSize) || 1;
 
-    const pageSize = request?.pageSize ?? 5;
-    const hasNextPage = filtered.length > pageSize;
-    const items = hasNextPage ? filtered.slice(0, pageSize) : filtered;
+    const startIndex = (pageNumber - 1) * pageSize;
+    const items = filtered.slice(startIndex, startIndex + pageSize);
 
-    let nextCursor: string | null = null;
-    if (hasNextPage && items.length > 0) {
-      const lastItem = items[items.length - 1];
-      nextCursor = btoa(lastItem.id);
-    }
+    const hasNextPage = pageNumber < totalPages;
+    const hasPreviousPage = pageNumber > 1;
 
     return {
       items,
-      nextCursor,
-      hasNextPage,
+      pageNumber,
       pageSize,
-      totalCount: studentList.length,
+      totalRecords,
+      totalPages,
+      hasNextPage,
+      hasPreviousPage,
     };
+  },
+
+  async getStudentById(id: string): Promise<Student> {
+    await delay(MOCK_DELAY);
+    const found = studentList.find((s) => s.id === id);
+    if (!found) {
+      throw new Error(`Student with ID '${id}' was not found.`);
+    }
+    return found;
   },
 
   async addStudent(request: AddStudentRequestDTO): Promise<AddStudentResponseDTO> {
     await delay(MOCK_DELAY);
 
+    const nameToUse = request.fullName || request.userName || 'Unnamed Student';
     const newStudent: Student = {
       id: String(studentList.length + 1),
       studentCode: request.studentCode || `STD-2026-00${studentList.length + 1}`,
-      fullName: request.fullName,
-      email: request.email,
-      department: request.department,
-      gpa: request.gpa,
-      status: request.status,
+      fullName: nameToUse,
+      name: nameToUse,
+      email: request.email || `${nameToUse.toLowerCase().replace(/\s+/g, '.')}@university.edu`,
+      department: request.department || 'Computer Science',
+      gpa: request.gpa ?? 3.5,
+      status: request.status || 'Active',
       enrolledDate: new Date().toISOString().split('T')[0],
     };
 
     studentList = [newStudent, ...studentList];
 
-    return { student: newStudent };
+    return { success: true, student: newStudent };
+  },
+
+  async updateStudent(request: UpdateStudentRequestDTO): Promise<UpdateStudentResponseDTO> {
+    await delay(MOCK_DELAY);
+
+    const index = studentList.findIndex((s) => s.id === request.id);
+    if (index === -1) {
+      throw new Error(`Student with ID '${request.id}' was not found.`);
+    }
+
+    const existing = studentList[index];
+    const nameToUse = request.fullName || request.userName || existing.fullName || existing.name;
+
+    const updatedStudent: Student = {
+      ...existing,
+      studentCode: request.studentCode || existing.studentCode,
+      fullName: nameToUse,
+      name: nameToUse,
+      email: request.email || existing.email,
+      department: request.department || existing.department,
+      gpa: request.gpa ?? existing.gpa,
+      status: request.status || existing.status,
+    };
+
+    studentList[index] = updatedStudent;
+
+    return { success: true, student: updatedStudent };
+  },
+
+  async deleteStudent(request: DeleteStudentRequestDTO): Promise<DeleteStudentResponseDTO> {
+    await delay(MOCK_DELAY);
+
+    studentList = studentList.filter((s) => s.id !== request.id);
+    return { success: true };
   },
 };
+
