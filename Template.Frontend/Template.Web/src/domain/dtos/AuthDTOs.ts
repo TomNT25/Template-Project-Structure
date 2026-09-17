@@ -12,6 +12,17 @@ export interface LoginResponseDTO {
   user: User;
 }
 
+export interface RefreshTokenRequestDTO {
+  refreshToken: string;
+  accessToken?: string;
+}
+
+export interface RefreshTokenResponseDTO {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+}
+
 export interface RegisterRequestDTO {
   username: string;
   email: string;

@@ -1,6 +1,8 @@
 import type {
   LoginRequestDTO,
   LoginResponseDTO,
+  RefreshTokenRequestDTO,
+  RefreshTokenResponseDTO,
   RegisterRequestDTO,
   RegisterResponseDTO,
   SendOtpRequestDTO,
@@ -22,6 +24,10 @@ export const authApi = {
   login: async (request: LoginRequestDTO): Promise<LoginResponseDTO> => {
     if (USE_MOCK) return mockAuthService.login(request);
     return httpClient.post<LoginResponseDTO>('/auth/login', request);
+  },
+
+  refreshToken: async (request: RefreshTokenRequestDTO): Promise<RefreshTokenResponseDTO> => {
+    return httpClient.post<RefreshTokenResponseDTO>('/auth/refresh-token', request);
   },
 
   register: async (request: RegisterRequestDTO): Promise<RegisterResponseDTO> => {

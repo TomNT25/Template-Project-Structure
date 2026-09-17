@@ -15,10 +15,27 @@ export class ApiError extends Error {
   }
 }
 
-interface RequestOptions extends Omit<RequestInit, 'body'> {
+export interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;
   params?: Record<string, string | number | boolean | undefined | null>;
 }
+
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (token: string) => void;
+  reject: (error: unknown) => void;
+}> = [];
+
+const processQueue = (error: unknown, token: string | null = null) => {
+  failedQueue.forEach((promise) => {
+    if (error) {
+      promise.reject(error);
+    } else if (token) {
+      promise.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
 
 export async function httpRequest<T>(
   endpoint: string,
@@ -57,11 +74,6 @@ export async function httpRequest<T>(
   try {
     const response = await fetch(url, config);
 
-    if (response.status === 401) {
-      tokenStorage.clearAll();
-      window.dispatchEvent(new Event('auth:unauthorized'));
-    }
-
     let jsonResult: BaseAPIResponse<T> | null = null;
     const text = await response.text();
     if (text) {
@@ -69,6 +81,87 @@ export async function httpRequest<T>(
         jsonResult = JSON.parse(text);
       } catch {
         jsonResult = null;
+      }
+    }
+
+    if (response.status === 401) {
+      const isAuthEndpoint =
+        endpoint.includes('/auth/login') ||
+        endpoint.includes('/auth/refresh-token') ||
+        endpoint.includes('/auth/refresh');
+
+      if (isAuthEndpoint) {
+        tokenStorage.clearAll();
+        window.dispatchEvent(new Event('auth:unauthorized'));
+        const message = jsonResult?.message || 'Unauthorized';
+        throw new ApiError(message, 401, jsonResult?.errors || []);
+      }
+
+      const refreshToken = tokenStorage.getRefreshToken();
+      if (!refreshToken) {
+        tokenStorage.clearAll();
+        window.dispatchEvent(new Event('auth:unauthorized'));
+        const message = jsonResult?.message || 'Unauthorized - Session expired';
+        throw new ApiError(message, 401, jsonResult?.errors || []);
+      }
+
+      if (isRefreshing) {
+        return new Promise<string>((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then((newToken) => {
+          return httpRequest<T>(endpoint, {
+            ...options,
+            headers: {
+              ...(customHeaders as Record<string, string>),
+              Authorization: `Bearer ${newToken}`,
+            },
+          });
+        });
+      }
+
+      isRefreshing = true;
+
+      try {
+        const refreshResponse = await fetch(`${BASE_URL}/auth/refresh-token`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken }),
+        });
+
+        if (!refreshResponse.ok) {
+          throw new Error('Refresh token request failed');
+        }
+
+        const refreshResult = await refreshResponse.json();
+        const data = refreshResult?.data || refreshResult;
+        const newAccessToken = data?.accessToken || data?.token;
+        const newRefreshToken = data?.refreshToken;
+
+        if (!newAccessToken) {
+          throw new Error('Invalid refresh token response');
+        }
+
+        tokenStorage.setToken(newAccessToken);
+        if (newRefreshToken) {
+          tokenStorage.setRefreshToken(newRefreshToken);
+        }
+
+        processQueue(null, newAccessToken);
+
+        return httpRequest<T>(endpoint, {
+          ...options,
+          headers: {
+            ...(customHeaders as Record<string, string>),
+            Authorization: `Bearer ${newAccessToken}`,
+          },
+        });
+      } catch (refreshErr) {
+        processQueue(refreshErr, null);
+        tokenStorage.clearAll();
+        window.dispatchEvent(new Event('auth:unauthorized'));
+        throw new ApiError('Session expired. Please sign in again.', 401);
+      } finally {
+        isRefreshing = false;
       }
     }
 

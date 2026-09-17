@@ -1,4 +1,5 @@
 const TOKEN_KEY = 'app_auth_token';
+const REFRESH_TOKEN_KEY = 'app_refresh_token';
 const USER_KEY = 'app_user_data';
 
 export const tokenStorage = {
@@ -12,6 +13,18 @@ export const tokenStorage = {
 
   removeToken: (): void => {
     localStorage.removeItem(TOKEN_KEY);
+  },
+
+  getRefreshToken: (): string | null => {
+    return localStorage.getItem(REFRESH_TOKEN_KEY);
+  },
+
+  setRefreshToken: (refreshToken: string): void => {
+    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+  },
+
+  removeRefreshToken: (): void => {
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
   },
 
   getUser: <T>(): T | null => {
@@ -34,6 +47,7 @@ export const tokenStorage = {
 
   clearAll: (): void => {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
   },
 };

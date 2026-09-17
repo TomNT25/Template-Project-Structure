@@ -31,7 +31,7 @@ a {
 }
 
 a:hover {
-  color: var(--color-accent);
+  color: var(--color-primary-hover);
 }
 
 button, input, select, textarea {

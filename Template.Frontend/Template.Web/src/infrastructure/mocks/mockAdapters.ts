@@ -1,6 +1,8 @@
 import type {
   LoginRequestDTO,
   LoginResponseDTO,
+  RefreshTokenRequestDTO,
+  RefreshTokenResponseDTO,
   RegisterRequestDTO,
   RegisterResponseDTO,
   SendOtpRequestDTO,
@@ -135,6 +137,20 @@ export const mockAuthService = {
       accessToken: mockToken,
       refreshToken: `mock-refresh-token-${Date.now()}`,
       user,
+    };
+  },
+
+  async refreshToken(request: RefreshTokenRequestDTO): Promise<RefreshTokenResponseDTO> {
+    await delay(MOCK_DELAY);
+    if (!request.refreshToken) {
+      throw new Error('Refresh token is required');
+    }
+    const newAccessToken = `mock-refreshed-jwt-token-${Date.now()}`;
+    const newRefreshToken = `mock-refreshed-refresh-token-${Date.now()}`;
+    return {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+      expiresIn: 60,
     };
   },
 

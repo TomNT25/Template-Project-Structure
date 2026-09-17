@@ -1,64 +1,66 @@
 .dashboard-container {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
 }
 
 .dashboard-hero {
-  background: linear-gradient(135deg, hsla(var(--color-primary-hsl), 0.2), hsla(var(--color-accent-hsl), 0.15));
-  border: var(--glass-border);
-  border-radius: var(--radius-xl);
-  padding: 32px;
-  backdrop-filter: var(--backdrop-blur);
+  background: var(--color-primary-alpha);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
   position: relative;
   overflow: hidden;
 }
 
 .dashboard-hero-title {
-  font-size: 1.8rem;
-  font-weight: 800;
-  margin-bottom: 8px;
+  font-size: 1.65rem;
+  font-weight: 700;
+  margin-bottom: 6px;
   color: var(--text-main);
+  letter-spacing: -0.01em;
 }
 
 .dashboard-hero-subtitle {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--text-muted);
   max-width: 680px;
+  line-height: 1.5;
 }
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
 }
 
 .stat-card {
   background: var(--bg-card);
-  border: var(--glass-border);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 24px;
-  backdrop-filter: var(--backdrop-blur);
+  padding: 20px 24px;
   display: flex;
   align-items: center;
   gap: 16px;
-  transition: transform var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
-  background: var(--bg-card-hover);
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-md);
 }
 
 .stat-icon {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--radius-md);
   background: var(--color-primary-alpha);
+  color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 }
 
 .stat-info {
@@ -73,21 +75,21 @@
 }
 
 .stat-value {
-  font-size: 1.6rem;
-  font-weight: 800;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: var(--text-main);
 }
 
 .arch-guide-card {
   background: var(--bg-card);
-  border: var(--glass-border);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 28px;
-  backdrop-filter: var(--backdrop-blur);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-sm);
 }
 
 .arch-guide-title {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 700;
   margin-bottom: 16px;
   color: var(--text-main);
@@ -104,11 +106,16 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 16px;
+  transition: border-color var(--transition-fast);
+}
+
+.arch-layer-box:hover {
+  border-color: var(--color-primary-light);
 }
 
 .arch-layer-header {
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   color: var(--color-primary);
   margin-bottom: 6px;
 }
@@ -116,4 +123,5 @@
 .arch-layer-desc {
   font-size: 0.82rem;
   color: var(--text-muted);
+  line-height: 1.4;
 }

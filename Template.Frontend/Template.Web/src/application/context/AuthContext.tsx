@@ -77,6 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await authApi.login(request);
       const extractedToken = response.token || response.accessToken || '';
+      const extractedRefreshToken = response.refreshToken || '';
       const fetchedUser = response.user;
 
       if (!extractedToken) {
@@ -85,6 +86,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       tokenStorage.setToken(extractedToken);
       setToken(extractedToken);
+
+      if (extractedRefreshToken) {
+        tokenStorage.setRefreshToken(extractedRefreshToken);
+      }
 
       if (fetchedUser) {
         fetchedUser.fullName = fetchedUser.fullName || (fetchedUser.firstName ? `${fetchedUser.firstName} ${fetchedUser.lastName || ''}`.trim() : fetchedUser.username || fetchedUser.email);

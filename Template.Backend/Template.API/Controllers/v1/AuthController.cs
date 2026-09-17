@@ -7,6 +7,7 @@ using Template.Application.Feature.v1.Auth.ForgotPassword;
 using Template.Application.Feature.v1.Auth.Login;
 using Template.Application.Feature.v1.Auth.Logout;
 using Template.Application.Feature.v1.Auth.Me;
+using Template.Application.Feature.v1.Auth.RefreshToken;
 using Template.Application.Feature.v1.Auth.Register;
 using Template.Application.Feature.v1.Auth.VerifyOtp;
 using Template.Domain.Contract.RequestHandlerHub;
@@ -34,6 +35,21 @@ namespace Project_Structure_Template.Controllers.v1
             var result = await _dispatcher.DispatchAsync<LoginResponseDTO>(request);
             var message = _localizer.GetString(MessageConstants.Auth.LoginSuccess);
             return OkResponse<LoginResponseDTO>(result, message);
+        }
+
+        /// <summary>
+        /// Refresh JWT Access Token using Refresh Token
+        /// </summary>
+        [HttpPost("refresh-token")]
+        [HttpPost("refresh")]
+        [ProducesResponseType(typeof(BaseAPIResponse<RefreshTokenResponseDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<BaseAPIResponse<RefreshTokenResponseDTO>>> RefreshToken([FromBody] RefreshTokenRequestDTO request)
+        {
+            var result = await _dispatcher.DispatchAsync<RefreshTokenResponseDTO>(request);
+            var message = _localizer.GetString(MessageConstants.Auth.RefreshTokenSuccess);
+            return OkResponse<RefreshTokenResponseDTO>(result, message);
         }
 
         /// <summary>

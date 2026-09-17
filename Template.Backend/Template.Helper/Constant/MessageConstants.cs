@@ -7,6 +7,7 @@ namespace Template.Helper.Constant
             public const string LoginSuccess = "Auth.LoginSuccess";
             public const string RegisterSuccess = "Auth.RegisterSuccess";
             public const string LogoutSuccess = "Auth.LogoutSuccess";
+            public const string RefreshTokenSuccess = "Auth.RefreshTokenSuccess";
             public const string SendOtpSuccess = "Auth.SendOtpSuccess";
             public const string VerifyOtpSuccess = "Auth.VerifyOtpSuccess";
             public const string ForgotPasswordSuccess = "Auth.ForgotPasswordSuccess";
@@ -14,6 +15,7 @@ namespace Template.Helper.Constant
             public const string GetMeSuccess = "Auth.GetMeSuccess";
             
             public const string InvalidCredentials = "Auth.InvalidCredentials";
+            public const string InvalidRefreshToken = "Auth.InvalidRefreshToken";
             public const string EmailRegistered = "Auth.EmailRegistered";
             public const string UsernameTaken = "Auth.UsernameTaken";
             public const string DefaultRoleNotFound = "Auth.DefaultRoleNotFound";
